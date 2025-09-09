@@ -1,0 +1,19 @@
+Arquivo de configuração de ambiente. Contém senhas e chaves secretas.
+NUNCA deve ser enviado para o repositório.
+.env
+
+Pasta de dependências do Node.js.
+Ela é muito grande e pode ser reinstalada a qualquer momento com 'npm install'.
+backend/node_modules/
+
+Arquivos de log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+Arquivos de configuração do sistema operacional
+.DS_Store
+Thumbs.db
+
+Arquivos de configuração de editores de código
+.vscode/

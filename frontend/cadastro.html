@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Seu Aplicativo</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="form-container">
+        <form action="#" method="POST">
+            <h1>Crie Sua Nova Conta</h1>
+            
+            <div class="input-group">
+                <label for="fullname">Nome Completo</label>
+                <input type="text" id="fullname" name="fullname" placeholder="Nome Sobrenome" required>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="seuemail@exemplo.com" required>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Nome de Usuário</label>
+                <input type="text" id="username" name="username" placeholder="seu_usuario" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="birthdate">Data de Nascimento</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <div class="input-group">
+                <label for="confirm-password">Confirme a Senha</label>
+                <input type="password" id="confirm-password" name="confirm-password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="action-button">Cadastrar</button>
+            
+            <p class="bottom-link">
+                Já tem uma conta? <a href="index.html">Faça login aqui</a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+/* Importação de Fonte Google Fonts: Roboto */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+/* Reset Básico e Estilos Globais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #9face6); /* Gradiente de fundo moderno */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Garante que o fundo cubra a tela toda, mesmo com pouco conteúdo */
+    color: #333;
+    padding: 20px; /* Padding para evitar que o card grude nas bordas em telas pequenas */
+}
+
+/* Container principal para os formulários (o "card" branco) */
+.form-container {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+    width: 100%;
+    max-width: 420px; /* Largura máxima padrão para login/cadastro */
+    text-align: center;
+}
+
+/* Títulos do Formulário */
+.form-container h1 {
+    font-size: 2.2em;
+    margin-bottom: 30px;
+    color: #333;
+    font-weight: 700;
+}
+
+/* Grupos de Input (Label + Input) */
+.input-group {
+    text-align: left; /* Alinha o texto da label e input à esquerda */
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block; /* Garante que a label ocupe sua própria linha */
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1em;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #9face6; /* Cor do gradiente */
+    box-shadow: 0 0 0 3px rgba(159, 172, 230, 0.3); /* Sombra suave no focus */
+}
+
+/* Placeholder Styling */
+.input-group input::placeholder {
+    color: #aaa;
+}
+
+/* Campo de Data: Ajustes para garantir que o placeholder seja visível em navegadores */
+input[type="date"] {
+    appearance: none; /* Remove o estilo padrão do navegador */
+    -webkit-appearance: none;
+    background-color: #fff; /* Fundo branco para o campo de data */
+    padding-right: 15px; /* Espaço para o ícone padrão, se houver */
+}
+
+input[type="date"]:required:invalid::-webkit-datetime-edit {
+    color: #aaa; /* Cor do placeholder para navegadores baseados em WebKit */
+}
+input[type="date"]:required:invalid {
+    color: #aaa; /* Cor do placeholder para outros navegadores */
+}
+input[type="date"]:focus {
+    color: #333; /* Volta a cor normal quando focado */
+}
+
+
+/* Botões de Ação (Login, Cadastrar) */
+.action-button {
+    width: 100%;
+    padding: 14px 20px;
+    background-color: #74ebd5; /* Cor primária do gradiente */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 15px;
+}
+
+.action-button:hover {
+    background-color: #61d4bf; /* Escurece um pouco no hover */
+    transform: translateY(-2px);
+}
+
+/* Links de Opção (Esqueceu a senha, Já tem conta?) */
+.option-link, .bottom-link {
+    display: block; /* Garante que o link ocupe sua própria linha */
+    font-size: 0.9em;
+    margin-top: 15px;
+}
+
+.option-link a, .bottom-link a {
+    color: #9face6; /* Cor secundária do gradiente */
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.option-link a:hover, .bottom-link a:hover {
+    text-decoration: underline;
+    color: #764ba2; /* Uma cor mais escura no hover */
+}
+
+/* Ajustes para telas menores (Responsividade) */
+@media (max-width: 600px) {
+    .form-container {
+        padding: 30px 20px;
+        margin: 0 15px; /* Margem nas laterais para não grudar na borda do celular */
+    }
+    .form-container h1 {
+        font-size: 1.8em;
+    }
+    .action-button {
+        font-size: 1em;
+        padding: 12px 15px;
+    }
+}
