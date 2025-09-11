@@ -8,7 +8,8 @@
 </head>
 <body>
     <div class="form-container">
-        <form action="#" method="POST">
+        <!-- MODIFICAÇÃO: Removido 'action' e 'method', adicionado 'id' -->
+        <form id="signup-form">
             <h1>Crie Sua Nova Conta</h1>
             
             <div class="input-group">
@@ -48,5 +49,63 @@
             </p>
         </form>
     </div>
+
+    <!-- ADIÇÃO: Bloco de JavaScript para enviar os dados ao backend -->
+    <script>
+        const form = document.getElementById('signup-form');
+
+        form.addEventListener('submit', async (event) => {
+            // Previne o comportamento padrão do formulário de recarregar a página
+            event.preventDefault();
+
+            // Pega os valores dos campos
+            const fullname = document.getElementById('fullname').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
+            const birthdate = document.getElementById('birthdate').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Validação simples de senha
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+
+            // Monta o objeto com os dados para enviar
+            const userData = {
+                fullname,
+                email,
+                username,
+                birthdate,
+                password
+            };
+
+            try {
+                // Faz a requisição POST para a rota /cadastro do backend
+                const response = await fetch('http://localhost:3000/cadastro', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert('Cadastro realizado com sucesso!');
+                    // Opcional: redirecionar para a tela de login
+                    window.location.href = 'index.html'; 
+                } else {
+                    alert('Erro no cadastro: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erro ao conectar com o servidor:', error);
+                alert('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
+            }
+        });
+    </script>
 </body>
 </html>
+

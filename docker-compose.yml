@@ -1,4 +1,5 @@
-version: '3.8'
+# Este ficheiro agora é responsável APENAS por iniciar o banco de dados.
+# O backend e o frontend serão executados localmente ("na mão").
 
 services:
   db: # O serviço do banco de dados
@@ -6,38 +7,15 @@ services:
     container_name: meu_projeto_db
     restart: always
     environment:
-      - POSTGRES_USER=${POSTGRES_USER} # CRIA o usuário a partir da variável no .env
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # DEFINE a senha a partir da variável no .env
-      - POSTGRES_DB=${POSTGRES_DB} # CRIA um banco de dados a partir da variável no .env
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  backend: # O serviço da sua aplicação
-    build: ./backend
-    container_name: meu_projeto_backend
-    restart: always
     ports:
-      - "3000:3000"
-    volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
-    environment:
-      - DB_HOST=db # O endereço do banco (o nome do serviço 'db')
-      - DB_USER=${POSTGRES_USER}  # O nome de usuário para CONECTAR (lê do .env)
-      - DB_PASSWORD=${POSTGRES_PASSWORD}  # A senha para CONECTAR (lê do .env)
-      - DB_NAME=${POSTGRES_DB} # O nome do banco de dados para CONECTAR (lê do .env)
-      - DB_PORT=5432
-    depends_on:
-      - db
-
-  frontend:
-    image: nginx:stable-alpine
-    container_name: meu_projeto_frontend
-    restart: always
-    ports:
-      - "8080:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
+      # Mapeia a porta 5432 do contentor para a porta 5432 da sua máquina
+      # para que o seu backend local se possa ligar a ele.
+      - "5432:5432"
 
 volumes:
   postgres_data:
