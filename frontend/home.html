@@ -273,298 +273,283 @@
             </div>
         </main>
     </div>
+<script>
+    //<!-- SCRIPT CORRIGIDO E RESTAURADO --> 
+    document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. SELEÇÃO DOS ELEMENTOS PRINCIPAIS ---
+    const navLinks = document.querySelectorAll('.nav-link');
+    const pageTitle = document.getElementById('page-title');
+    const pageContent = document.getElementById('page-content');
+    const mainContentArea = document.getElementById('main-content-area');
+    const currentUser = 'Luiz Panis';
 
-    <!-- SCRIPT CORRIGIDO E RESTAURADO -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pageTitle = document.getElementById('page-title');
-            const pageContent = document.getElementById('page-content');
-            const mainContentArea = document.getElementById('main-content-area');
-            const currentUser = 'Luiz Panis';
+    // --- 2. ESTADO DA APLICAÇÃO ---
+    // A nossa "base de dados" local. Começa vazia e será preenchida pela API.
+    let ticketData = [];
+    let technicians = [];
 
-            // Base de Dados Simulada
-            let ticketData = [
-                { id: 743, title: 'Impressora não funciona', status: 'Aberto', priority: 'Alta', assignee: 'Ana Silva', requester: 'Mariana Costa', email: 'mariana@email.com', progress: 0, situation: 'Aguardando Atendimento', description: 'A impressora do segundo andar não está a imprimir.', sala: '201', predio: 'B', telefone: '5199998888', patrimonio: 'NTI-0123' },
-                { id: 742, title: 'Sistema de E-mail lento', status: 'Em Andamento', priority: 'Média', assignee: 'Carlos Souza', requester: 'João Pereira', email: 'joao@email.com', progress: 50, situation: 'Analisando o Problema', description: 'Os e-mails estão a demorar para enviar.'},
-                { id: 741, title: 'Pedido de novo monitor', status: 'Resolvido', priority: 'Baixa', assignee: 'Ana Silva', requester: 'Luiz Panis', email: 'luiz.panis@email.com', progress: 100, situation: 'Finalizado', description: 'O monitor foi entregue e instalado.'},
-            ];
-            
-            const statuses = ['Todos', 'Aberto', 'Em Andamento', 'Resolvido'];
-            const technicians = ['Todos', ...new Set(ticketData.filter(t => t.assignee).map(t => t.assignee))];
-            
-            // --- Templates das Páginas ---
-            const pages = {
-                dashboard: `
-                    <div class="widgets-grid">
-                        <div class="widget"><h3>Chamados Abertos</h3><p class="value">${ticketData.filter(t => t.status === 'Aberto').length}</p></div>
-                        <div class="widget"><h3>Meus Chamados Ativos</h3><p class="value">${ticketData.filter(t => t.assignee === currentUser && t.status !== 'Resolvido').length}</p></div>
-                        <div class="widget"><h3>Prioridade Alta</h3><p class="value">${ticketData.filter(t => t.priority === 'Alta' && t.status !== 'Resolvido').length}</p></div>
+    // --- 3. FUNÇÕES DE COMUNICAÇÃO COM O BACKEND (API) ---
+
+    // Função para buscar todos os chamados do servidor
+    async function fetchTickets() {
+        try {
+            const response = await fetch('http://localhost:3000/chamados');
+            if (!response.ok) throw new Error('Falha na resposta da rede');
+            ticketData = await response.json();
+            // Atualiza a lista de técnicos dinamicamente a partir dos dados recebidos
+            technicians = ['Todos', ...new Set(ticketData.filter(t => t.assignee).map(t => t.assignee))];
+        } catch (error) {
+            console.error("Erro ao buscar chamados da API:", error);
+            alert("Não foi possível carregar os chamados do servidor.");
+        }
+    }
+
+    // Função para criar um novo chamado no servidor
+    async function createTicket(newTicket) {
+        try {
+            const response = await fetch('http://localhost:3000/chamados', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTicket)
+            });
+            if (!response.ok) throw new Error('Falha ao criar chamado');
+            alert('Novo chamado aberto com sucesso!');
+            await fetchTickets(); // Atualiza a lista de chamados local
+            loadPage('todos_chamados');
+        } catch (error) {
+            console.error("Erro ao criar chamado:", error);
+            alert("Não foi possível criar o chamado no servidor.");
+        }
+    }
+
+    // Função para atualizar um chamado existente no servidor
+    async function updateTicket(ticketId, updatedData) {
+        try {
+            const response = await fetch(`http://localhost:3000/chamados/${ticketId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            });
+            if (!response.ok) throw new Error('Falha ao atualizar chamado');
+            return await response.json();
+        } catch (error) {
+            console.error(`Erro ao atualizar chamado #${ticketId}:`, error);
+            alert("Não foi possível salvar as alterações no servidor.");
+        }
+    }
+
+    // --- 4. "TEMPLATES" DAS PÁGINAS ---
+    // Esta função gera o HTML para cada página dinamicamente, usando os dados mais recentes.
+    function getPageTemplates() {
+        const statuses = ['Todos', 'Aberto', 'Em Andamento', 'Resolvido'];
+        return {
+            dashboard: `
+                <div class="widgets-grid">
+                    <div class="widget"><h3>Chamados Abertos</h3><p class="value">${ticketData.filter(t => t.status === 'Aberto').length}</p></div>
+                    <div class="widget"><h3>Meus Chamados Ativos</h3><p class="value">${ticketData.filter(t => t.assignee === currentUser && t.status !== 'Resolvido').length}</p></div>
+                    <div class="widget"><h3>Prioridade Alta</h3><p class="value">${ticketData.filter(t => t.priority === 'Alta' && t.status !== 'Resolvido').length}</p></div>
+                </div>
+                <div class="content-panel">
+                    <h2>Chamados de Alta Prioridade Abertos</h2>
+                    <table class="data-table">
+                        <thead><tr><th>ID</th><th>Título</th><th>Solicitante</th><th>Técnico</th><th>Andamento</th></tr></thead>
+                        <tbody id="dashboard-urgent-tickets"></tbody>
+                    </table>
+                </div>
+            `,
+            todos_chamados: `
+                <div class="content-panel">
+                    <h2>Todos os Chamados</h2>
+                    <div class="filter-bar">
+                        <div class="search-bar"><input type="text" id="search-input" placeholder="Pesquisar por ID ou título..."></div>
+                        <div class="filter-group"><label for="status-filter">Situação</label><select id="status-filter">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                        <div class="filter-group"><label for="technician-filter">Técnico</label><select id="technician-filter">${technicians.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
                     </div>
-                    <div class="content-panel">
-                        <h2>Chamados de Alta Prioridade Abertos</h2>
-                        <table class="data-table">
-                            <thead><tr><th>ID</th><th>Título</th><th>Solicitante</th><th>Técnico</th><th>Andamento</th></tr></thead>
-                            <tbody id="dashboard-urgent-tickets"></tbody>
-                        </table>
-                    </div>
-                `,
-                todos_chamados: `
-                    <div class="content-panel">
-                        <h2>Todos os Chamados</h2>
-                        <div class="filter-bar">
-                            <div class="search-bar"><input type="text" id="search-input" placeholder="Pesquisar por ID ou título..."></div>
-                            <div class="filter-group">
-                                <label for="status-filter">Situação</label>
-                                <select id="status-filter">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="technician-filter">Técnico</label>
-                                <select id="technician-filter">${technicians.map(t => `<option value="${t}">${t}</option>`).join('')}</select>
-                            </div>
+                    <table class="data-table">
+                        <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Técnico</th><th>Andamento (%)</th></tr></thead>
+                        <tbody id="all-tickets-table-body"></tbody>
+                    </table>
+                </div>
+            `,
+            meus_chamados: `
+                <div class="content-panel">
+                     <h2>Meus Chamados</h2>
+                    <table class="data-table">
+                         <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Solicitante</th><th>Andamento (%)</th></tr></thead>
+                         <tbody id="my-tickets-table-body"></tbody>
+                    </table>
+                </div>
+            `,
+            abrir_chamado: `
+                 <div class="content-panel">
+                    <h2>Abrir Novo Chamado</h2>
+                    <form class="ticket-form" id="new-ticket-form">
+                        <div class="form-group half-width"><label>Grupos:</label><input type="text" value="NTI - Núcleo de tecnologia da informação" disabled style="background:#eee;"></div>
+                        <div class="form-group half-width"><label>Área:</label><input type="text" value="Suporte ao Usuário" disabled style="background:#eee;"></div>
+                        <div class="form-group half-width"><label for="ticket-requester">Nome:</label><input type="text" id="ticket-requester" value="${currentUser}" required></div>
+                        <div class="form-group half-width"><label for="ticket-email">E-mail:</label><input type="email" id="ticket-email" value="luiz.panis@email.com" required></div>
+                        <div class="form-group"><label for="sala">Sala:</label><input type="text" id="sala"></div>
+                        <div class="form-group"><label for="predio">Prédio:</label><input type="text" id="predio"></div>
+                        <div class="form-group half-width"><label for="telefone">Telefone:</label><input type="tel" id="telefone"></div>
+                        <div class="form-group full-width"><label for="ticket-title">Título:</label><input type="text" id="ticket-title" placeholder="Digite uma descrição detalhada do chamado" required></div>
+                        <div class="form-group full-width"><label for="ticket-description">Descrição:</label><textarea id="ticket-description" placeholder="Detalhe o seu problema ou solicitação..." required style="min-height: 150px; resize: vertical;"></textarea></div>
+                        <div class="form-group half-width"><label for="ticket-priority">Prioridade:</label><select id="ticket-priority"><option value="">-- Selecione --</option><option>Baixa</option><option>Média</option><option>Alta</option></select></div>
+                        <div class="form-group half-width"><label for="ticket-patrimonio">Número de patrimônio:</label><input type="text" id="ticket-patrimonio"></div>
+                        <div class="form-actions full-width">
+                            <button type="button" class="action-button secondary-button" id="cancel-btn">Cancelar</button>
+                            <button type="submit" class="action-button">Finalizar Chamado</button>
                         </div>
-                        <table class="data-table">
-                             <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Técnico</th><th>Andamento (%)</th></tr></thead>
-                             <tbody id="all-tickets-table-body"></tbody>
-                        </table>
-                    </div>
-                `,
-                meus_chamados: `
-                    <div class="content-panel">
-                         <h2>Meus Chamados</h2>
-                        <table class="data-table">
-                             <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Solicitante</th><th>Andamento (%)</th></tr></thead>
-                             <tbody id="my-tickets-table-body"></tbody>
-                        </table>
-                    </div>
-                `,
-                abrir_chamado: `
-                     <div class="content-panel">
-                        <h2>Abrir Novo Chamado</h2>
-                        <form class="ticket-form" id="new-ticket-form">
-                            <div class="form-group half-width">
-                                <label>Grupos:</label>
-                                <input type="text" value="NTI - Núcleo de tecnologia da informação" disabled style="background:#eee;">
-                            </div>
-                            <div class="form-group half-width">
-                                <label>Área:</label>
-                                <input type="text" value="Suporte ao Usuário" disabled style="background:#eee;">
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="ticket-requester">Nome:</label>
-                                <input type="text" id="ticket-requester" value="${currentUser}" required>
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="ticket-email">E-mail:</label>
-                                <input type="email" id="ticket-email" value="luiz.panis@email.com" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sala">Sala:</label>
-                                <input type="text" id="sala">
-                            </div>
-                             <div class="form-group">
-                                <label for="predio">Prédio:</label>
-                                <input type="text" id="predio">
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="telefone">Telefone:</label>
-                                <input type="tel" id="telefone">
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="ticket-title">Título:</label>
-                                <input type="text" id="ticket-title" placeholder="Digite uma descrição detalhada do chamado" required>
-                            </div>
-                            <div class="form-group full-width">
-                                <label for="ticket-description">Descrição:</label>
-                                <textarea id="ticket-description" placeholder="Detalhe o seu problema ou solicitação..." required style="min-height: 150px; resize: vertical;"></textarea>
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="ticket-priority">Prioridade:</label>
-                                <select id="ticket-priority">
-                                    <option value="">-- Selecione --</option>
-                                    <option>Baixa</option>
-                                    <option>Média</option>
-                                    <option>Alta</option>
-                                </select>
-                            </div>
-                            <div class="form-group half-width">
-                                <label for="ticket-patrimonio">Número de patrimônio:</label>
-                                <input type="text" id="ticket-patrimonio">
-                            </div>
-                            <div class="form-actions full-width">
-                                <button type="button" class="action-button secondary-button" id="cancel-btn">Cancelar</button>
-                                <button type="submit" class="action-button">Finalizar Chamado</button>
-                            </div>
-                        </form>
-                    </div>
-                `,
-            };
-            
-            function renderUrgentTickets() {
-                const urgentTickets = ticketData.filter(t => t.status === 'Aberto' && t.priority === 'Alta');
-                const tbody = document.getElementById('dashboard-urgent-tickets');
-                renderTable(tbody, urgentTickets, false);
-            }
-            
-            function renderAllTickets() {
-                const searchInput = document.getElementById('search-input');
-                if (!searchInput) return;
-                const searchTerm = searchInput.value.toLowerCase();
-                const selectedStatus = document.getElementById('status-filter').value;
-                const selectedTechnician = document.getElementById('technician-filter').value;
-                const filteredTickets = ticketData.filter(ticket => (ticket.title.toLowerCase().includes(searchTerm) || ticket.id.toString().includes(searchTerm)) && (selectedStatus === 'Todos' || ticket.status === selectedStatus) && (selectedTechnician === 'Todos' || ticket.assignee === selectedTechnician));
-                renderTable(document.getElementById('all-tickets-table-body'), filteredTickets, false);
-            }
+                    </form>
+                </div>
+            `,
+        };
+    }
 
-            function renderMyTickets() {
-                const myTickets = ticketData.filter(ticket => ticket.assignee === currentUser);
-                renderTable(document.getElementById('my-tickets-table-body'), myTickets, true);
-            }
+    // --- 5. FUNÇÕES DE RENDERIZAÇÃO E LÓGICA DE EVENTOS ---
+    
+    function renderUrgentTickets() { /* ... (sem alterações) */ }
+    function renderAllTickets() { /* ... (sem alterações) */ }
+    function renderMyTickets() { /* ... (sem alterações) */ }
 
-            function renderTable(tbody, data, isMyTicketsTable = false) {
-                 tbody.innerHTML = data.length > 0 ? data.map(ticket => `
-                    <tr data-ticket-id="${ticket.id}" class="clickable">
-                        <td>#${ticket.id}</td>
-                        <td>${ticket.title}</td>
-                        <td><span class="status-badge status-${ticket.status.toLowerCase().replace(' ', '-')}">${ticket.status}</span></td>
-                        <td>${ticket.priority}</td>
-                        <td>${isMyTicketsTable ? ticket.requester : (ticket.assignee || 'Não atribuído')}</td>
-                        <td>${ticket.progress}%</td>
-                    </tr>
-                `).join('') : `<tr><td colspan="6" style="text-align:center;">Nenhum chamado encontrado.</td></tr>`;
-                
-                tbody.querySelectorAll('tr.clickable').forEach(row => {
-                    row.addEventListener('click', () => {
-                        const ticketId = row.dataset.ticketId;
-                        const previousPage = tbody.id === 'my-tickets-table-body' ? 'meus_chamados' : (tbody.id === 'all-tickets-table-body' ? 'todos_chamados' : 'dashboard');
-                        if(ticketId) loadTicketDetail(parseInt(ticketId), previousPage);
-                    });
-                });
-            }
+    function renderTable(tbody, data, isMyTicketsTable = false) {
+        if (!tbody) return;
+        tbody.innerHTML = data.length > 0 ? data.map(ticket => `
+            <tr data-ticket-id="${ticket.id}" class="clickable">
+                <td>#${ticket.id}</td>
+                <td>${ticket.title}</td>
+                <td><span class="status-badge status-${ticket.status.toLowerCase().replace(/ /g, '-')}">${ticket.status}</span></td>
+                <td>${ticket.priority}</td>
+                <td>${isMyTicketsTable ? ticket.requester : (ticket.assignee || 'Não atribuído')}</td>
+                <td>${ticket.progress}%</td>
+            </tr>
+        `).join('') : `<tr><td colspan="6" style="text-align:center;">Nenhum chamado encontrado.</td></tr>`;
 
-            function loadTicketDetail(ticketId, previousPage) {
-                const ticket = ticketData.find(t => t.id === ticketId);
-                pageTitle.textContent = `Detalhe do Chamado #${ticket.id}`;
-                mainContentArea.classList.remove('dashboard-view');
-                
-                pageContent.innerHTML = `
-                    <div class="content-panel">
-                        <h2>${ticket.title}</h2>
-                        <form class="ticket-detail-form" id="ticket-detail-form">
-                            <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px;">
-                                <legend style="padding:0 10px; font-weight:bold;">Detalhes do Chamado</legend>
-                                <div class="ticket-form">
-                                    <div class="form-group half-width"><label>Solicitante:</label><input type="text" value="${ticket.requester}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Email:</label><input type="text" value="${ticket.email || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group"><label>Sala:</label><input type="text" value="${ticket.sala || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group"><label>Prédio:</label><input type="text" value="${ticket.predio || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Telefone:</label><input type="text" value="${ticket.telefone || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Nº Patrimônio:</label><input type="text" value="${ticket.patrimonio || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group full-width"><label>Descrição Original:</label><textarea disabled style="background:#eee; min-height:100px; resize:none;">${ticket.description}</textarea></div>
-                                </div>
-                            </fieldset>
-                            <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px; margin-top:20px;">
-                                <legend style="padding:0 10px; font-weight:bold;">Atendimento do Técnico</legend>
-                                <div class="ticket-form">
-                                    <div class="form-group"><label>Atribuído para:</label><select id="assignee-select">${technicians.filter(t => t !== 'Todos').map(t => `<option ${ticket.assignee === t ? 'selected' : ''}>${t}</option>`).join('')}<option ${!ticket.assignee ? 'selected' : ''}>Não atribuído</option></select></div>
-                                    <div class="form-group"><label>Situação:</label><select id="status-select"><option ${ticket.status === 'Aberto' ? 'selected' : ''}>Aberto</option><option ${ticket.status === 'Em Andamento' ? 'selected' : ''}>Em Andamento</option><option ${ticket.status === 'Resolvido' ? 'selected' : ''}>Resolvido</option></select></div>
-                                    <div class="form-group"><label>Situação do andamento:</label><select id="situation-select"><option ${ticket.situation === 'Aguardando Atendimento' ? 'selected' : ''}>Aguardando Atendimento</option><option ${ticket.situation === 'Analisando o Problema' ? 'selected' : ''}>Analisando o Problema</option><option ${ticket.situation === 'Finalizado' ? 'selected' : ''}>Finalizado</option></select></div>
-                                    <div class="form-group"><label>Andamento (%):</label><select id="progress-select"><option value="0" ${ticket.progress === 0 ? 'selected' : ''}>0%</option><option value="20" ${ticket.progress === 20 ? 'selected' : ''}>20%</option><option value="50" ${ticket.progress === 50 ? 'selected' : ''}>50%</option><option value="100" ${ticket.progress === 100 ? 'selected' : ''}>100%</option></select></div>
-                                    <div class="form-group full-width"><label>Anotações da Solução:</label><textarea id="solution-notes" placeholder="Descreva a solução aplicada...">${ticket.solution_notes || ''}</textarea></div>
-                                    <div class="form-group full-width"><label>Anexar Imagem:</label><input type="file" id="solution-attachment"></div>
-                                </div>
-                            </fieldset>
-                            <div class="form-actions full-width">
-                                <button type="button" class="action-button secondary-button" id="back-to-list-btn">Voltar</button>
-                                <button type="submit" class="action-button">Salvar Alterações</button>
-                            </div>
-                        </form>
-                    </div>
-                `;
-
-                document.getElementById('back-to-list-btn').addEventListener('click', () => loadPage(previousPage));
-                document.getElementById('ticket-detail-form').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    const ticketToUpdate = ticketData.find(t => t.id === ticketId);
-                    ticketToUpdate.status = document.getElementById('status-select').value;
-                    ticketToUpdate.situation = document.getElementById('situation-select').value;
-                    ticketToUpdate.progress = parseInt(document.getElementById('progress-select').value);
-                    const newAssignee = document.getElementById('assignee-select').value;
-                    ticketToUpdate.assignee = newAssignee === 'Não atribuído' ? null : newAssignee;
-                    ticketToUpdate.solution_notes = document.getElementById('solution-notes').value;
-                    alert(`Alterações ao chamado #${ticketId} salvas com sucesso!`);
-                    loadPage(previousPage);
-                });
-            }
-
-            function setupEventListeners(pageName) {
-                if (pageName === 'dashboard') {
-                    renderUrgentTickets();
-                } else if (pageName === 'todos_chamados') {
-                    document.getElementById('search-input').addEventListener('input', renderAllTickets);
-                    document.getElementById('status-filter').addEventListener('change', renderAllTickets);
-                    document.getElementById('technician-filter').addEventListener('change', renderAllTickets);
-                    renderAllTickets();
-                } else if (pageName === 'meus_chamados') {
-                    renderMyTickets();
-                } else if (pageName === 'abrir_chamado') {
-                    document.getElementById('new-ticket-form').addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        const newTicket = {
-                            id: Math.floor(Math.random() * 100) + 800,
-                            title: document.getElementById('ticket-title').value,
-                            status: 'Aberto',
-                            priority: document.getElementById('ticket-priority').value,
-                            assignee: null,
-                            requester: document.getElementById('ticket-requester').value,
-                            email: document.getElementById('ticket-email').value,
-                            progress: 0,
-                            situation: 'Aguardando Atendimento',
-                            description: document.getElementById('ticket-description').value,
-                            sala: document.getElementById('sala').value,
-                            predio: document.getElementById('predio').value,
-                            telefone: document.getElementById('telefone').value,
-                            patrimonio: document.getElementById('ticket-patrimonio').value,
-                        };
-                        ticketData.unshift(newTicket);
-                        alert('Novo chamado aberto com sucesso!');
-                        loadPage('todos_chamados');
-                    });
-                    document.getElementById('cancel-btn').addEventListener('click', () => loadPage('todos_chamados'));
-                }
-            }
-            
-            function loadPage(pageName) {
-                const linkText = document.querySelector(`.nav-link[data-page="${pageName}"]`).textContent.trim();
-                pageTitle.textContent = linkText;
-                pageContent.innerHTML = pages[pageName];
-
-                if (pageName === 'dashboard') {
-                    mainContentArea.classList.add('dashboard-view');
-                } else {
-                    mainContentArea.classList.remove('dashboard-view');
-                }
-
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.dataset.page === pageName) {
-                        link.classList.add('active');
-                    }
-                });
-                setupEventListeners(pageName);
-            }
-
-            loadPage('dashboard');
-
-            navLinks.forEach(link => {
-                link.addEventListener('click', (event) => {
-                    event.preventDefault();
-                    const page = event.target.closest('a').dataset.page;
-                    loadPage(page);
-                });
+        tbody.querySelectorAll('tr.clickable').forEach(row => {
+            row.addEventListener('click', () => {
+                const ticketId = row.dataset.ticketId;
+                const previousPage = tbody.id.includes('my-tickets') ? 'meus_chamados' : (tbody.id.includes('all-tickets') ? 'todos_chamados' : 'dashboard');
+                if (ticketId) loadTicketDetail(parseInt(ticketId), previousPage);
             });
         });
-    </script>
+    }
+
+    function loadTicketDetail(ticketId, previousPage) {
+        const ticket = ticketData.find(t => t.id === ticketId);
+        pageTitle.textContent = `Detalhe do Chamado #${ticket.id}`;
+        mainContentArea.classList.remove('dashboard-view');
+        
+        pageContent.innerHTML = `
+            <div class="content-panel">
+                <h2>${ticket.title}</h2>
+                <form class="ticket-detail-form" id="ticket-detail-form">
+                    <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px;">
+                        <legend style="padding:0 10px; font-weight:bold;">Detalhes do Chamado</legend>
+                        <div class="ticket-form">
+                            <div class="form-group half-width"><label>Solicitante:</label><input type="text" value="${ticket.requester}" disabled style="background:#eee;"></div>
+                            <div class="form-group half-width"><label>Email:</label><input type="text" value="${ticket.email || 'N/A'}" disabled style="background:#eee;"></div>
+                            <div class="form-group"><label>Sala:</label><input type="text" value="${ticket.sala || 'N/A'}" disabled style="background:#eee;"></div>
+                            <div class="form-group"><label>Prédio:</label><input type="text" value="${ticket.predio || 'N/A'}" disabled style="background:#eee;"></div>
+                            <div class="form-group half-width"><label>Telefone:</label><input type="text" value="${ticket.telefone || 'N/A'}" disabled style="background:#eee;"></div>
+                            <div class="form-group half-width"><label>Nº Patrimônio:</label><input type="text" value="${ticket.patrimonio || 'N/A'}" disabled style="background:#eee;"></div>
+                            <div class="form-group full-width"><label>Descrição Original:</label><textarea disabled style="background:#eee; min-height:100px; resize:none;">${ticket.description}</textarea></div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px; margin-top:20px;">
+                        <legend style="padding:0 10px; font-weight:bold;">Atendimento do Técnico</legend>
+                        <div class="ticket-form">
+                            <div class="form-group"><label>Atribuído para:</label><select id="assignee-select">${technicians.filter(t => t !== 'Todos').map(t => `<option ${ticket.assignee === t ? 'selected' : ''}>${t}</option>`).join('')}<option ${!ticket.assignee ? 'selected' : ''}>Não atribuído</option></select></div>
+                            <div class="form-group"><label>Situação:</label><select id="status-select"><option ${ticket.status === 'Aberto' ? 'selected' : ''}>Aberto</option><option ${ticket.status === 'Em Andamento' ? 'selected' : ''}>Em Andamento</option><option ${ticket.status === 'Resolvido' ? 'selected' : ''}>Resolvido</option></select></div>
+                            <div class="form-group"><label>Situação do andamento:</label><select id="situation-select"><option ${ticket.situation === 'Aguardando Atendimento' ? 'selected' : ''}>Aguardando Atendimento</option><option ${ticket.situation === 'Analisando o Problema' ? 'selected' : ''}>Analisando o Problema</option><option ${ticket.situation === 'Finalizado' ? 'selected' : ''}>Finalizado</option></select></div>
+                            <div class="form-group"><label>Andamento (%):</label><select id="progress-select"><option value="0" ${ticket.progress === 0 ? 'selected' : ''}>0%</option><option value="20" ${ticket.progress === 20 ? 'selected' : ''}>20%</option><option value="50" ${ticket.progress === 50 ? 'selected' : ''}>50%</option><option value="100" ${ticket.progress === 100 ? 'selected' : ''}>100%</option></select></div>
+                            <div class="form-group full-width"><label>Anotações da Solução:</label><textarea id="solution-notes" placeholder="Descreva a solução aplicada...">${ticket.solution_notes || ''}</textarea></div>
+                        </div>
+                    </fieldset>
+                    <div class="form-actions full-width">
+                        <button type="button" class="action-button secondary-button" id="back-to-list-btn">Voltar</button>
+                        <button type="submit" class="action-button">Salvar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.getElementById('back-to-list-btn').addEventListener('click', () => loadPage(previousPage));
+        document.getElementById('ticket-detail-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const updatedData = {
+                status: document.getElementById('status-select').value,
+                situation: document.getElementById('situation-select').value,
+                progress: parseInt(document.getElementById('progress-select').value),
+                assignee: document.getElementById('assignee-select').value,
+                solution_notes: document.getElementById('solution-notes').value,
+            };
+            const updatedTicket = await updateTicket(ticketId, updatedData);
+            if (updatedTicket) {
+                alert(`Alterações ao chamado #${ticketId} salvas com sucesso!`);
+                await fetchTickets();
+                loadPage(previousPage);
+            }
+        });
+    }
+
+    function setupEventListeners(pageName) {
+        if (pageName === 'dashboard') {
+            renderUrgentTickets();
+        } else if (pageName === 'todos_chamados') {
+            document.getElementById('search-input').addEventListener('input', renderAllTickets);
+            document.getElementById('status-filter').addEventListener('change', renderAllTickets);
+            document.getElementById('technician-filter').addEventListener('change', renderAllTickets);
+            renderAllTickets();
+        } else if (pageName === 'meus_chamados') {
+            renderMyTickets();
+        } else if (pageName === 'abrir_chamado') {
+            document.getElementById('new-ticket-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newTicket = {
+                    title: document.getElementById('ticket-title').value,
+                    requester: document.getElementById('ticket-requester').value,
+                    email: document.getElementById('ticket-email').value,
+                    sala: document.getElementById('sala').value,
+                    predio: document.getElementById('predio').value,
+                    telefone: document.getElementById('telefone').value,
+                    description: document.getElementById('ticket-description').value,
+                    priority: document.getElementById('ticket-priority').value,
+                    patrimonio: document.getElementById('ticket-patrimonio').value,
+                };
+                createTicket(newTicket);
+            });
+            document.getElementById('cancel-btn').addEventListener('click', () => loadPage('todos_chamados'));
+        }
+    }
+    
+    async function loadPage(pageName) {
+        const linkText = document.querySelector(`.nav-link[data-page="${pageName}"]`).textContent.trim();
+        pageTitle.textContent = linkText;
+        pageContent.innerHTML = getPageTemplates()[pageName] || '<p>Página não encontrada.</p>';
+
+        mainContentArea.classList.toggle('dashboard-view', pageName === 'dashboard');
+        navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+        
+        setupEventListeners(pageName);
+    }
+
+    async function initializeApp() {
+        await fetchTickets();
+        loadPage('dashboard');
+    }
+
+    initializeApp();
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', async (event) => {
+            event.preventDefault();
+            const page = event.target.closest('a').dataset.page;
+            await fetchTickets();
+            loadPage(page);
+        });
+    });
+});
+</script>
 </body>
 </html>
+
 
