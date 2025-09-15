@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro - Seu Aplicativo</title>
+    <title>Cadastro - Central de Suporte</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/png" href="css/imagens/icone_sistema.jpg">
+    <link rel="icon" type="image/jpeg" href="css/Imagens/icone_sistema.jpg">
+    <link rel="icon" href="data:,">
 </head>
 <body>
     <div class="form-container">
-        <!-- MODIFICAÇÃO: Removido 'action' e 'method', adicionado 'id' -->
         <form id="signup-form">
             <h1>Crie Sua Nova Conta</h1>
             
@@ -51,15 +51,10 @@
         </form>
     </div>
 
-    <!-- ADIÇÃO: Bloco de JavaScript para enviar os dados ao backend -->
     <script>
         const form = document.getElementById('signup-form');
-
         form.addEventListener('submit', async (event) => {
-            // Previne o comportamento padrão do formulário de recarregar a página
             event.preventDefault();
-
-            // Pega os valores dos campos
             const fullname = document.getElementById('fullname').value;
             const email = document.getElementById('email').value;
             const username = document.getElementById('username').value;
@@ -67,43 +62,29 @@
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
 
-            // Validação simples de senha
             if (password !== confirmPassword) {
                 alert('As senhas não coincidem!');
                 return;
             }
 
-            // Monta o objeto com os dados para enviar
-            const userData = {
-                fullname,
-                email,
-                username,
-                birthdate,
-                password
-            };
+            const userData = { fullname, email, username, birthdate, password };
 
             try {
-                // Faz a requisição POST para a rota /cadastro do backend
                 const response = await fetch('http://localhost:3000/cadastro', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(userData)
                 });
-
                 const result = await response.json();
-
                 if (response.ok) {
-                    alert('Cadastro realizado com sucesso!');
-                    // Opcional: redirecionar para a tela de login
-                    window.location.href = 'index.html'; 
+                    alert('Cadastro realizado com sucesso! Pode agora fazer o login.');
+                    window.location.href = './index.html'; 
                 } else {
                     alert('Erro no cadastro: ' + result.message);
                 }
             } catch (error) {
                 console.error('Erro ao conectar com o servidor:', error);
-                alert('Não foi possível conectar ao servidor. Tente novamente mais tarde.');
+                alert('Não foi possível conectar ao servidor.');
             }
         });
     </script>

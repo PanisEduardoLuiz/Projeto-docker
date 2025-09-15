@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Seu Aplicativo</title>
+    <title>Login - Central de Suporte</title>
     <link rel="stylesheet" href="css/style.css">
-    <!-- LINHA ADICIONADA: Define o ícone da página -->
-    <link rel="icon" type="image/png" href="css/imagens/icone_sistema.jpg">
-     <link rel="icon" href="data:,"> <!--PArara Sair o erro do console favicon.ico-->
+    <link rel="icon" type="image/jpeg" href="css/Imagens/icone_sistema.jpg">
+    <link rel="icon" href="data:,">
 </head>
 <body>
     <div class="form-container">
@@ -37,6 +36,9 @@
     </div>
 
     <script>
+        // Limpa qualquer sessão antiga ao chegar na página de login
+        sessionStorage.removeItem('loggedInUser');
+
         const form = document.getElementById('login-form');
 
         form.addEventListener('submit', async (event) => {
@@ -56,13 +58,14 @@
                     body: JSON.stringify(loginData)
                 });
 
-               const result = await response.json();
+                const result = await response.json();
 
                 if (response.ok) {
-                    // MUDANÇA PRINCIPAL AQUI:
-                    // Em vez de mostrar um alert, esta linha redireciona o navegador
-                    // para a sua nova página inicial.
-                    window.location.href = 'home.html'; 
+                    // Guarda os dados do utilizador na sessão para usar na home page
+                    sessionStorage.setItem('loggedInUser', JSON.stringify(result.user));
+                    
+                    // Redireciona para a home
+                    window.location.href = './home.html'; 
                 } else {
                     alert('Erro no login: ' + result.message);
                 }
@@ -74,5 +77,4 @@
     </script>
 </body>
 </html>
-
 
