@@ -51,40 +51,62 @@
         </form>
     </div>
 
-    <script>
+   <script>
+        // 1. Obtém uma referência ao elemento do formulário no HTML que possui o ID 'signup-form'.
         const form = document.getElementById('signup-form');
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const fullname = document.getElementById('fullname').value;
-            const email = document.getElementById('email').value;
-            const username = document.getElementById('username').value;
-            const birthdate = document.getElementById('birthdate').value;
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
 
+        // 2. Adiciona um "ouvinte de evento" (event listener) ao formulário.
+        //    A função assíncrona será executada sempre que o evento 'submit' ocorrer no formulário (ou seja, quando o usuário tentar enviar o formulário).
+        form.addEventListener('submit', async (event) => {
+            // 3. Impede o comportamento padrão do navegador de recarregar a página ao submeter um formulário.
+            event.preventDefault();
+
+            // 4. Coleta os valores atuais de cada campo de entrada do formulário.
+            //    document.getElementById('idDoCampo').value acessa o conteúdo digitado pelo usuário em cada input.
+            const fullname = document.getElementById('fullname').value;             // Captura o valor do campo "Nome Completo".
+            const email = document.getElementById('email').value;                   // Captura o valor do campo "Email".
+            const username = document.getElementById('username').value;             // Captura o valor do campo "Nome de Usuário".
+            const birthdate = document.getElementById('birthdate').value;           // Captura o valor do campo "Data de Nascimento".
+            const password = document.getElementById('password').value;             // Captura o valor do campo "Senha".
+            const confirmPassword = document.getElementById('confirm-password').value; // Captura o valor do campo "Confirme a Senha".
+
+            // 5. Realiza uma validação simples: verifica se os valores dos campos de senha e confirmação de senha são idênticos.
             if (password !== confirmPassword) {
-                alert('As senhas não coincidem!');
-                return;
+                alert('As senhas não coincidem!'); // Se as senhas forem diferentes, exibe um alerta para o usuário.
+                return; // Interrompe a execução da função aqui, impedindo que o restante do código (envio de dados) seja executado.
             }
 
+            // 6. Cria um objeto JavaScript (que será convertido para JSON) contendo os dados do usuário coletados do formulário.
+            //    A sintaxe { fullname, email, ... } é um atalho para { fullname: fullname, email: email, ... } quando o nome da propriedade é igual ao da variável.
             const userData = { fullname, email, username, birthdate, password };
 
+            // 7. Inicia um bloco try-catch para lidar com possíveis erros que podem ocorrer durante a comunicação de rede (requisição ao servidor).
             try {
+                // 8. Faz uma requisição HTTP do tipo POST para o servidor backend.
+                //    'http://localhost:3000/cadastro' é o endereço (endpoint) onde o servidor está configurado para receber os dados de cadastro.
                 const response = await fetch('http://localhost:3000/cadastro', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(userData)
+                    method: 'POST', // Define o método HTTP da requisição como POST, indicando que estamos enviando dados para criar um novo recurso no servidor.
+                    headers: { 'Content-Type': 'application/json' }, // Define o cabeçalho 'Content-Type' para informar ao servidor que o corpo da requisição é um JSON.
+                    body: JSON.stringify(userData) // Converte o objeto 'userData' (passo 6) para uma string JSON e a envia como o corpo da requisição.
                 });
-                const result = await response.json();
+
+                // 9. Processa a resposta recebida do servidor.
+                const result = await response.json(); // Converte a string JSON da resposta do servidor de volta para um objeto JavaScript.
+
+                // 10. Verifica se a requisição foi bem-sucedida.
+                //     'response.ok' é uma propriedade booleana que é 'true' se o status HTTP da resposta estiver no intervalo 200-299 (indicando sucesso).
                 if (response.ok) {
-                    alert('Cadastro realizado com sucesso! Pode agora fazer o login.');
-                    window.location.href = './index.html'; 
+                    alert('Cadastro realizado com sucesso!'); // Se a resposta for bem-sucedida, exibe um alerta para o usuário.
+                    window.location.href = 'index.html'; // Redireciona o navegador para a página 'index.html' (geralmente a tela de login) após o cadastro bem-sucedido.
                 } else {
+                    // 11. Se a resposta do servidor não for 'ok' (houve um erro no backend, como usuário já existente),
+                    //     exibe a mensagem de erro fornecida pelo servidor (contida em 'result.message').
                     alert('Erro no cadastro: ' + result.message);
                 }
             } catch (error) {
-                console.error('Erro ao conectar com o servidor:', error);
-                alert('Não foi possível conectar ao servidor.');
+                // 12. Este bloco 'catch' é executado se ocorrer um erro durante a tentativa de conexão ou envio da requisição (ex: servidor offline, problema de rede, URL incorreta).
+                console.error('Erro ao conectar com o servidor:', error); // Loga o erro detalhado no console do navegador para auxiliar na depuração.
+                alert('Não foi possível conectar ao servidor.'); // Exibe uma mensagem de erro mais amigável para o usuário.
             }
         });
     </script>

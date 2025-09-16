@@ -1,5 +1,5 @@
-/* Importação de Fonte Google Fonts: Roboto */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* Importação de Fonte Google Fonts: Poppins (uma fonte moderna e arredondada) */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* Reset Básico e Estilos Globais */
 * {
@@ -9,45 +9,46 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #74ebd5, #9face6); /* Gradiente de fundo moderno */
+    font-family: 'Poppins', sans-serif;
+    background-color: #121212; /* Fundo escuro principal */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; /* Garante que o fundo cubra a tela toda, mesmo com pouco conteúdo */
-    color: #333;
-    padding: 20px; /* Padding para evitar que o card grude nas bordas em telas pequenas */
+    min-height: 100vh;
+    color: #E0E0E0; /* Cor de texto principal clara */
+    padding: 20px;
 }
 
-/* Container principal para os formulários (o "card" branco) */
+/* Container principal para os formulários (o "card" escuro) */
 .form-container {
-    background-color: #ffffff;
+    background-color: #1E1E1E; /* Fundo do card, um pouco mais claro que o body */
     padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra mais suave */
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5); /* Sombra mais pronunciada */
     width: 100%;
-    max-width: 420px; /* Largura máxima padrão para login/cadastro */
+    max-width: 420px;
     text-align: center;
+    border: 1px solid #333; /* Borda sutil para dar profundidade */
 }
 
 /* Títulos do Formulário */
 .form-container h1 {
     font-size: 2.2em;
     margin-bottom: 30px;
-    color: #333;
+    color: #ffffff; /* Título em branco puro para destaque */
     font-weight: 700;
 }
 
 /* Grupos de Input (Label + Input) */
 .input-group {
-    text-align: left; /* Alinha o texto da label e input à esquerda */
-    margin-bottom: 20px;
+    text-align: left;
+    margin-bottom: 22px;
 }
 
 .input-group label {
-    display: block; /* Garante que a label ocupe sua própria linha */
+    display: block;
     font-size: 0.9em;
-    color: #555;
+    color: #AAAAAA; /* Cor da label mais suave */
     margin-bottom: 8px;
     font-weight: 500;
 }
@@ -55,87 +56,71 @@ body {
 .input-group input {
     width: 100%;
     padding: 12px 15px;
-    border: 1px solid #ddd;
+    border: 1px solid #444; /* Borda do input */
+    background-color: #2c2c2c; /* Fundo do input */
     border-radius: 8px;
     font-size: 1em;
-    color: #333;
+    color: #E0E0E0; /* Cor do texto digitado */
     transition: all 0.3s ease;
 }
 
 .input-group input:focus {
     outline: none;
-    border-color: #9face6; /* Cor do gradiente */
-    box-shadow: 0 0 0 3px rgba(159, 172, 230, 0.3); /* Sombra suave no focus */
+    border-color: #F97316; /* Borda laranja ao focar */
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2); /* Sombra laranja suave */
 }
 
 /* Placeholder Styling */
 .input-group input::placeholder {
-    color: #aaa;
+    color: #777;
 }
 
-/* Campo de Data: Ajustes para garantir que o placeholder seja visível em navegadores */
-input[type="date"] {
-    appearance: none; /* Remove o estilo padrão do navegador */
-    -webkit-appearance: none;
-    background-color: #fff; /* Fundo branco para o campo de data */
-    padding-right: 15px; /* Espaço para o ícone padrão, se houver */
-}
-
-input[type="date"]:required:invalid::-webkit-datetime-edit {
-    color: #aaa; /* Cor do placeholder para navegadores baseados em WebKit */
-}
-input[type="date"]:required:invalid {
-    color: #aaa; /* Cor do placeholder para outros navegadores */
-}
-input[type="date"]:focus {
-    color: #333; /* Volta a cor normal quando focado */
-}
-
-
-/* Botões de Ação (Login, Cadastrar) */
+/* Botões de Ação (Login, Cadastrar) - O DESTAQUE LARANJA */
 .action-button {
     width: 100%;
     padding: 14px 20px;
-    background-color: #74ebd5; /* Cor primária do gradiente */
+    background: linear-gradient(90deg, #fd7e14, #f97316); /* Gradiente laranja */
     color: #fff;
     border: none;
     border-radius: 8px;
     font-size: 1.1em;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
     margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3); /* Sombra laranja */
 }
 
 .action-button:hover {
-    background-color: #61d4bf; /* Escurece um pouco no hover */
-    transform: translateY(-2px);
+    transform: translateY(-3px); /* Efeito de elevação */
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4); /* Sombra mais forte no hover */
 }
 
 /* Links de Opção (Esqueceu a senha, Já tem conta?) */
 .option-link, .bottom-link {
-    display: block; /* Garante que o link ocupe sua própria linha */
+    display: block;
     font-size: 0.9em;
-    margin-top: 15px;
+    margin-top: 20px;
+    color: #AAAAAA; /* Cor do texto ao redor do link */
 }
 
 .option-link a, .bottom-link a {
-    color: #9face6; /* Cor secundária do gradiente */
+    color: #F97316; /* Cor laranja para os links */
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
     transition: color 0.3s ease;
 }
 
 .option-link a:hover, .bottom-link a:hover {
     text-decoration: underline;
-    color: #764ba2; /* Uma cor mais escura no hover */
+    color: #fd7e14; /* Laranja mais claro no hover */
 }
 
 /* Ajustes para telas menores (Responsividade) */
 @media (max-width: 600px) {
     .form-container {
         padding: 30px 20px;
-        margin: 0 15px; /* Margem nas laterais para não grudar na borda do celular */
+        margin: 0 15px;
     }
     .form-container h1 {
         font-size: 1.8em;

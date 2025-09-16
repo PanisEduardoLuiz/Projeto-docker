@@ -86,6 +86,7 @@ app.post('/cadastro', async (req, res) => {
     }
 });
 
+// ROTA DE LOGIN COM A ALTERAÇÃO APLICADA
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -98,7 +99,10 @@ app.post('/login', async (req, res) => {
         if (!isPasswordCorrect) {
             return res.status(401).json({ message: 'Email ou senha inválidos.' });
         }
-        const userResponse = { id: user.id, username: user.username, email: user.email };
+        
+        // ALTERAÇÃO APLICADA AQUI: Adicionado 'fullname' à resposta para o frontend
+        const userResponse = { id: user.id, username: user.username, email: user.email, fullname: user.fullname };
+        
         res.status(200).json({ message: 'Login realizado com sucesso!', user: userResponse });
     } catch (error) {
         res.status(500).json({ message: 'Erro no servidor.' });
@@ -168,4 +172,3 @@ app.listen(port, () => {
     console.log(`Backend a rodar em http://localhost:${port}`);
     inicializarBancoDeDados();
 });
-

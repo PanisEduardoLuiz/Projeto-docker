@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Central de Suporte</title>
-    <!-- O seu CSS base para fontes e cores primárias -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/jpeg" href="css/Imagens/icone_sistema.jpg">
-    <link rel="icon" href="data:,">
+    <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Dashboard - Central de Suporte</title>
+
+    <link rel="stylesheet" href="Tema/style_tema.css">
+
+    <link rel="stylesheet" href="css/style.css"> 
+    <link rel="icon" type="image/jpeg" href="css/Imagens/icone_sistema.jpg"> 
+    <link rel="icon" href="data:,"> 
     <style>
+        /* Estilo para o botão de troca de tema */
+        .theme-toggle-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: var(--cor-texto-principal);
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
         /* ======================================================================== */
-        /* ESTILOS CSS - VERSÃO HÍBRIDA DO DASHBOARD                                */
+        /* ESTILOS CSS - AGORA USANDO VARIÁVEIS DE TEMA                             */
         /* ======================================================================== */
 
         body {
-            background-color: #f0f2f5;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto-principal);
             display: flex;
             min-height: 100vh;
             padding: 0;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .dashboard-container {
@@ -27,26 +42,27 @@
             width: 100%;
         }
 
-        /* --- Barra Lateral (Sidebar) --- */
         .sidebar {
             width: 250px;
-            background-color: #ffffff;
+            background-color: var(--cor-painel);
             padding: 20px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            box-shadow: 2px 0 10px var(--cor-sombra);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
             z-index: 10;
+            border-right: 1px solid var(--cor-borda);
+            transition: background-color 0.3s, border-color 0.3s;
         }
 
         .sidebar .logo {
             font-size: 1.8em;
             font-weight: 700;
-            color: #333;
+            color: var(--cor-texto-principal);
             text-align: center;
             padding-bottom: 20px;
             margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--cor-borda);
         }
 
         .sidebar nav {
@@ -65,13 +81,14 @@
             padding: 12px 15px;
             margin-bottom: 8px;
             text-decoration: none;
-            color: #555;
+            color: var(--cor-texto-secundario);
             font-weight: 500;
             border-radius: 8px;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+
         .sidebar nav a:hover, .sidebar nav a.active {
-            background-color: #74ebd5; /* Cor primária do seu sistema */
+            background-color: var(--cor-primaria);
             color: #fff;
         }
 
@@ -89,18 +106,27 @@
             text-align: center;
             text-decoration: none;
         }
+        
+        body.dark-mode .sidebar .logout-button {
+            background-color: #4d2323;
+            color: #ff9e9e;
+        }
 
-        /* --- Conteúdo Principal --- */
+
         .main-content {
             flex-grow: 1;
             padding: 30px 40px;
             overflow-y: auto;
             transition: background 0.5s ease;
-            background: linear-gradient(135deg, #74ebd5, #9face6); /* Fundo gradiente por defeito */
+            background: var(--cor-fundo);
         }
         
-        .main-content.plain-view {
-            background: #f0f2f5; /* Fundo branco para outras páginas */
+        .main-content.dashboard-view {
+             background: linear-gradient(135deg, #74ebd5, #9face6);
+        }
+        
+        body.dark-mode .main-content.dashboard-view {
+            background: linear-gradient(135deg, #234842, #39425f);
         }
 
         .main-header {
@@ -113,19 +139,25 @@
         .main-header h1 {
             font-size: 2.2em;
             font-weight: 700;
-            color: white; /* Cor do texto por defeito para o fundo gradiente */
+            color: var(--cor-texto-principal);
             transition: color 0.5s ease;
         }
-        .main-content.plain-view .main-header h1,
-        .main-content.plain-view .user-profile span {
-             color: #333; /* Cor do texto para o fundo branco */
+        
+        .main-content.dashboard-view .main-header h1,
+        .main-content.dashboard-view .user-profile {
+            color: white;
         }
         
+        body.dark-mode .main-content.dashboard-view .theme-toggle-button {
+            color: white;
+        }
+
         .user-profile {
             display: flex;
             align-items: center;
-            color: white;
+            color: var(--cor-texto-principal);
         }
+
         .user-profile span {
             margin-right: 15px;
             font-weight: 500;
@@ -135,18 +167,18 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
+            background-color: var(--cor-primaria);
             color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: bold;
         }
-        .main-content.plain-view .user-avatar {
-             background-color: #9face6;
+
+        .main-content.dashboard-view .user-avatar {
+            background-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* --- Estilos para os Widgets (como na foto) --- */
         .widgets-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -156,21 +188,28 @@
             background: rgba(255, 255, 255, 0.85);
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            box-shadow: 0 8px 32px 0 var(--cor-sombra);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
-        .widget h3 { font-size: 1em; color: #555; margin-bottom: 10px; }
-        .widget .value { font-size: 2.2em; font-weight: 700; color: #333; }
         
-        /* Painel para a tabela e outras páginas */
+        body.dark-mode .widget {
+            background: rgba(30, 30, 30, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .widget h3 { font-size: 1em; color: var(--cor-texto-secundario); margin-bottom: 10px; }
+        .widget .value { font-size: 2.2em; font-weight: 700; color: var(--cor-texto-principal); }
+        
         .content-panel {
-            background-color: #fff;
+            background-color: var(--cor-painel);
             padding: 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px var(--cor-sombra);
+            transition: background-color 0.3s;
         }
+        
         .main-content.dashboard-view .content-panel {
              margin-top: 30px;
             background-color: rgba(255, 255, 255, 0.9);
@@ -178,50 +217,76 @@
             -webkit-backdrop-filter: blur(4px);
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
+
+        body.dark-mode .main-content.dashboard-view .content-panel {
+             background-color: rgba(30, 30, 30, 0.75);
+        }
         
         .content-panel h2 {
            margin-bottom: 25px;
-           border-bottom: 1px solid #eee;
+           border-bottom: 1px solid var(--cor-borda);
            padding-bottom: 15px;
-           color: #333;
+           color: var(--cor-texto-principal);
         }
+
         .main-content.dashboard-view .content-panel h2 {
             border-bottom-color: rgba(0,0,0,0.1);
         }
+
+        body.dark-mode .main-content.dashboard-view .content-panel h2 {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
         
-        /* Barra de Filtros */
         .filter-bar { display: flex; gap: 20px; margin-bottom: 25px; align-items: flex-end; }
         .search-bar { flex-grow: 1; min-width: 250px; }
+        
         .search-bar input, .filter-group select, .form-group select, .form-group input, .form-group textarea {
-            width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em;
+            width: 100%; padding: 10px 15px; border: 1px solid var(--cor-borda); border-radius: 8px; font-size: 1em;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto-principal);
         }
         .filter-group, .form-group { display: flex; flex-direction: column; }
-        .filter-group label, .form-group label { font-size: 0.8em; margin-bottom: 5px; color: #666; }
+        .filter-group label, .form-group label { font-size: 0.8em; margin-bottom: 5px; color: var(--cor-texto-secundario); }
         
-        /* Tabela de Chamados */
         .data-table { width: 100%; border-collapse: collapse; }
-        .data-table th, .data-table td { padding: 12px 15px; border-bottom: 1px solid #eee; text-align: left; vertical-align: middle; }
-        .data-table th { background-color: #f9f9f9; }
+        .data-table td, .data-table th { white-space: nowrap; }
+        .data-table th, .data-table td { padding: 12px 15px; border-bottom: 1px solid var(--cor-borda); text-align: left; vertical-align: middle; }
+        .data-table th { background-color: var(--cor-fundo); }
+        
         .main-content.dashboard-view .data-table th, .main-content.dashboard-view .data-table td {
              border-bottom: 1px solid rgba(0,0,0,0.05);
         }
+
+        body.dark-mode .main-content.dashboard-view .data-table th, 
+        body.dark-mode .main-content.dashboard-view .data-table td {
+             border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        
         .main-content.dashboard-view .data-table th {
             background-color: transparent;
             color: #333;
         }
+
+         body.dark-mode .main-content.dashboard-view .data-table th {
+            color: var(--cor-texto-principal);
+        }
+        
         .data-table tbody tr.clickable { cursor: pointer; transition: background-color 0.2s ease; }
-        .data-table tbody tr.clickable:hover { background-color: #f0f2f5; }
+        .data-table tbody tr.clickable:hover { background-color: var(--cor-fundo-hover); }
+        
         .main-content.dashboard-view .data-table tbody tr.clickable:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
+
+        body.dark-mode .main-content.dashboard-view .data-table tbody tr.clickable:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
         
-        /* Estilos para badges de status */
         .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; color: #fff; }
         .status-aberto { background-color: #3b82f6; }
         .status-em-andamento { background-color: #f97316; }
         .status-resolvido { background-color: #16a34a; }
 
-        /* Formulários */
         .ticket-form, .ticket-detail-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -238,13 +303,28 @@
         .secondary-button { background-color: #e2e8f0; color: #475569; }
         .secondary-button:hover { background-color: #cbd5e1; }
         
+        body.dark-mode .secondary-button {
+            background-color: #3a4150;
+            color: #c2c9d6;
+        }
+         body.dark-mode .secondary-button:hover {
+            background-color: #495162;
+        }
+
+        /* Estilos para campos desabilitados que agora usam variáveis */
+        input:disabled, textarea:disabled {
+            background-color: var(--cor-fundo-hover);
+            color: var(--cor-texto-secundario);
+            cursor: not-allowed;
+            border-color: var(--cor-borda);
+        }
+        
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <aside class="sidebar">
-            <div class="logo">HelpDesk</div>
-            <nav>
+            <div class="logo">HelpDesk</div> <nav>
                 <ul>
                     <li><a href="#" class="nav-link active" data-page="dashboard">Dashboard</a></li>
                     <li><a href="#" class="nav-link" data-page="todos_chamados">Todos os Chamados</a></li>
@@ -252,313 +332,363 @@
                     <li><a href="#" class="nav-link" data-page="abrir_chamado">Abrir Chamado</a></li>
                 </ul>
             </nav>
-            <a href="#" id="logout-btn" class="logout-button">Sair</a>
-        </aside>
+            <a href="#" id="logout-btn" class="logout-button">Sair</a> </aside>
 
         <main class="main-content" id="main-content-area">
             <header class="main-header">
-                <h1 id="page-title">Dashboard</h1>
+                <h1 id="page-title">Dashboard</h1> 
                 <div class="user-profile">
-                    <span id="welcome-message"></span>
-                    <div class="user-avatar" id="user-avatar"></div>
+                    <button id="theme-toggle-btn" class="theme-toggle-button" title="Alternar tema">🌙</button>
+                    <span id="welcome-message"></span> 
+                    <div class="user-avatar" id="user-avatar"></div> 
                 </div>
             </header>
-            <div id="page-content"></div>
+            <div id="page-content" style="overflow-x: auto;"></div> 
         </main>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const userJSON = sessionStorage.getItem('loggedInUser');
-            if (!userJSON) {
-                window.location.href = './index.html';
+   <script>
+    // Garante que o script só seja executado depois que o DOM (estrutura HTML) estiver completamente carregado.
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- 1. Verificação de Autenticação e Dados do Usuário ---
+        const userJSON = sessionStorage.getItem('loggedInUser');
+        if (!userJSON) {
+            window.location.href = './index.html';
+            return;
+        }
+        const loggedInUser = JSON.parse(userJSON);
+        const currentUser = loggedInUser.fullname;
+
+        // --- 2. Referências a Elementos HTML ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageTitle = document.getElementById('page-title');
+        const pageContent = document.getElementById('page-content');
+        const mainContentArea = document.getElementById('main-content-area');
+
+        // --- 3. Variáveis de Estado da Aplicação ---
+        let ticketData = [];
+        const technicians = ['Não atribuído', 'LUIZ EDUARDO PANIS', 'JUNIOR AUGUSTO LANG', 'LUCAS GIOVANELLA', 'EDUARDO BRAGA FURTADO'];
+
+        // --- 4. Funções de Interação com o Backend (API) ---
+        async function fetchTickets() {
+            try {
+                const response = await fetch('http://localhost:3000/chamados');
+                if (!response.ok) throw new Error('Falha na resposta da rede');
+                ticketData = await response.json();
+            } catch (error) {
+                console.error("Erro ao buscar chamados:", error);
+            }
+        }
+
+        async function createTicket(newTicket) {
+            try {
+                const response = await fetch('http://localhost:3000/chamados', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newTicket)
+                });
+                if (!response.ok) throw new Error('Falha ao criar chamado');
+                alert('Novo chamado aberto com sucesso!');
+                await fetchTickets();
+                loadPage('todos_chamados');
+            } catch (error) {
+                console.error("Erro ao criar chamado:", error);
+                alert("Não foi possível criar o chamado.");
+            }
+        }
+
+        async function updateTicket(ticketId, updatedData) {
+            try {
+                const response = await fetch(`http://localhost:3000/chamados/${ticketId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatedData)
+                });
+                if (!response.ok) throw new Error('Falha ao atualizar chamado');
+                return await response.json();
+            } catch (error) {
+                console.error(`Erro ao atualizar chamado #${ticketId}:`, error);
+                alert("Não foi possível salvar as alterações.");
+            }
+        }
+        
+        // --- 5. Templates HTML das Páginas (SPA) ---
+        function getPageTemplates() {
+            const statuses = ['Todos', 'Aberto', 'Em Andamento', 'Resolvido'];
+            const dynamicTechnicians = ['Todos', ...new Set(ticketData.filter(t => t.assignee).map(t => t.assignee))];
+            const generalHeader = `<thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Técnico</th><th>Andamento (%)</th></tr></thead>`;
+            const myTicketsHeader = `<thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Solicitante</th><th>Andamento (%)</th></tr></thead>`;
+
+            return {
+                dashboard: `
+                    <div class="widgets-grid">
+                        <div class="widget"><h3>Chamados Abertos</h3><p class="value">${ticketData.filter(t => t.status === 'Aberto').length}</p></div>
+                        <div class="widget"><h3>Meus Chamados Ativos</h3><p class="value">${ticketData.filter(t => t.assignee.toUpperCase() === currentUser.toUpperCase() && t.status !== 'Resolvido').length}</p></div>
+                        <div class="widget"><h3>Chamados Finalizados</h3><p class="value">${ticketData.filter(t => t.status === 'Resolvido').length}</p></div>
+                    </div>
+                    <div class="content-panel">
+                        <h2>Chamados de Alta Prioridade Ativos</h2>
+                        <table class="data-table">${generalHeader} <tbody id="dashboard-urgent-tickets"></tbody></table>
+                    </div>`,
+                todos_chamados: `
+                    <div class="content-panel">
+                        <h2>Todos os Chamados</h2>
+                        <div class="filter-bar">
+                            <div class="search-bar"><input type="text" id="search-input" placeholder="Pesquisar por ID ou título..."></div>
+                            <div class="filter-group"><label for="status-filter">Situação</label><select id="status-filter">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                            <div class="filter-group"><label for="technician-filter">Técnico</label><select id="technician-filter">${dynamicTechnicians.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
+                        </div>
+                        <table class="data-table">${generalHeader} <tbody id="all-tickets-table-body"></tbody></table>
+                    </div>`,
+                meus_chamados: `
+                    <div class="content-panel">
+                         <h2>Meus Chamados</h2>
+                         <div class="filter-bar">
+                             <div class="search-bar"><input type="text" id="my-search-input" placeholder="Pesquisar por ID ou título..."></div>
+                             <div class="filter-group"><label for="my-status-filter">Status</label><select id="my-status-filter">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                        </div>
+                        <table class="data-table">${myTicketsHeader} <tbody id="my-tickets-table-body"></tbody></table>
+                    </div>`,
+                abrir_chamado: `
+                      <div class="content-panel">
+                          <h2>Abrir Novo Chamado</h2>
+                          <form class="ticket-form" id="new-ticket-form">
+                              <div class="form-group half-width"><label>Grupos:</label><input type="text" value="NTI - Núcleo de tecnologia da informação" disabled></div>
+                              <div class="form-group half-width"><label>Área:</label><input type="text" value="Suporte ao Usuário" disabled></div>
+                              <div class="form-group half-width"><label for="ticket-requester">Nome:</label><input type="text" id="ticket-requester" placeholder="Seu nome completo" required></div>
+                              <div class="form-group half-width"><label for="ticket-email">E-mail:</label><input type="email" id="ticket-email" placeholder="Seu email de contato" required></div>
+                              <div class="form-group"><label for="sala">Sala:</label><input type="text" id="sala"></div>
+                              <div class="form-group"><label for="predio">Prédio:</label><input type="text" id="predio"></div>
+                              <div class="form-group half-width"><label for="telefone">Telefone:</label><input type="tel" id="telefone"></div>
+                              <div class="form-group full-width"><label for="ticket-title">Título:</label><input type="text" id="ticket-title" placeholder="Digite uma descrição detalhada do chamado" required></div>
+                              <div class="form-group full-width"><label for="ticket-description">Descrição:</label><textarea id="ticket-description" placeholder="Detalhe o seu problema ou solicitação..." required style="min-height: 150px; resize: vertical;"></textarea></div>
+                              <div class="form-group half-width"><label for="ticket-priority">Prioridade:</label><select id="ticket-priority"><option value="">-- Selecione --</option><option>Baixa</option><option>Média</option><option>Alta</option></select></div>
+                              <div class="form-group half-width"><label for="ticket-patrimonio">Número de patrimônio:</label><input type="text" id="ticket-patrimonio"></div>
+                              <div class="form-actions full-width">
+                                  <button type="button" class="action-button secondary-button" id="cancel-btn">Cancelar</button>
+                                  <button type="submit" class="action-button">Finalizar Chamado</button>
+                              </div>
+                          </form>
+                      </div>`,
+            };
+        }
+        
+        // --- 6. Funções de Renderização de Tabelas ---
+        function renderUrgentTickets() {
+            const urgentTickets = ticketData.filter(t => t.status !== 'Resolvido' && t.priority === 'Alta');
+            const tbody = document.getElementById('dashboard-urgent-tickets');
+            renderTable(tbody, urgentTickets, 'all_tickets');
+        }
+
+        function renderAllTickets() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const selectedStatus = document.getElementById('status-filter').value;
+            const selectedTechnician = document.getElementById('technician-filter').value;
+            const filteredTickets = ticketData.filter(ticket => 
+                (ticket.title.toLowerCase().includes(searchTerm) || ticket.id.toString().includes(searchTerm)) && 
+                (selectedStatus === 'Todos' || ticket.status === selectedStatus) && 
+                (selectedTechnician === 'Todos' || ticket.assignee === selectedTechnician)
+            );
+            renderTable(document.getElementById('all-tickets-table-body'), filteredTickets, 'all_tickets');
+        }
+
+        function renderMyTickets() {
+            const searchTerm = document.getElementById('my-search-input').value.toLowerCase();
+            const selectedStatus = document.getElementById('my-status-filter').value;
+            const myTickets = ticketData.filter(ticket => {
+                const isAssignedToMe = ticket.assignee?.toUpperCase() === currentUser?.toUpperCase();
+                if (!isAssignedToMe) return false;
+                const matchesSearch = ticket.title.toLowerCase().includes(searchTerm) || ticket.id.toString().includes(searchTerm);
+                const matchesStatus = selectedStatus === 'Todos' || ticket.status === selectedStatus;
+                return matchesSearch && matchesStatus;
+            });
+            renderTable(document.getElementById('my-tickets-table-body'), myTickets, 'my_tickets');
+        }
+        
+        function renderTable(tbody, data, tableType) {
+             if (!tbody) return;
+             let rowsHtml;
+             let colspan = 6;
+
+             if (tableType === 'my_tickets') {
+                   rowsHtml = data.map(ticket => `
+                       <tr data-ticket-id="${ticket.id}" class="clickable">
+                           <td>#${ticket.id}</td><td>${ticket.title}</td>
+                           <td><span class="status-badge status-${ticket.status.toLowerCase().replace(/ /g, '-')}">${ticket.status}</span></td>
+                           <td>${ticket.priority}</td><td>${ticket.requester}</td> <td>${ticket.progress}%</td>
+                       </tr>
+                   `).join('');
+             } else {
+                   rowsHtml = data.map(ticket => `
+                       <tr data-ticket-id="${ticket.id}" class="clickable">
+                           <td>#${ticket.id}</td><td>${ticket.title}</td>
+                           <td><span class="status-badge status-${ticket.status.toLowerCase().replace(/ /g, '-')}">${ticket.status}</span></td>
+                           <td>${ticket.priority}</td><td>${ticket.assignee || 'Não atribuído'}</td> <td>${ticket.progress}%</td>
+                       </tr>
+                   `).join('');
+             }
+
+             tbody.innerHTML = data.length > 0 ? rowsHtml : `<tr><td colspan="${colspan}" style="text-align:center;">Nenhum chamado encontrado.</td></tr>`;
+
+             tbody.querySelectorAll('tr.clickable').forEach(row => {
+                 row.addEventListener('click', () => {
+                     const ticketId = row.dataset.ticketId;
+                     const previousPage = tbody.id.includes('dashboard') ? 'dashboard' : (tableType === 'my_tickets' ? 'meus_chamados' : 'todos_chamados');
+                     if(ticketId) loadTicketDetail(parseInt(ticketId), previousPage);
+                 });
+             });
+        }
+
+        // --- 7. Funções de Navegação e Detalhes do Chamado ---
+        function loadTicketDetail(ticketId, previousPage) {
+            const ticket = ticketData.find(t => t.id === ticketId);
+            
+            if (!ticket) {
+                console.error(`Chamado com ID #${ticketId} não encontrado.`);
+                alert(`Não foi possível carregar os detalhes do chamado #${ticketId}.`);
+                loadPage(previousPage || 'todos_chamados');
                 return;
             }
-            const loggedInUser = JSON.parse(userJSON);
-            const currentUser = loggedInUser.fullname;
 
-            const navLinks = document.querySelectorAll('.nav-link');
-            const pageTitle = document.getElementById('page-title');
-            const pageContent = document.getElementById('page-content');
-            const mainContentArea = document.getElementById('main-content-area');
-
-            let ticketData = [];
-            const technicians = ['Não atribuído', 'LUIZ EDUARDO PANIS', 'JUNIOR AUGUSTO LANG', 'LUCAS GIOVANELLA', 'EDUARDO BRAGA FURTADO'];
-
-            async function fetchTickets() {
-                try {
-                    const response = await fetch('http://localhost:3000/chamados');
-                    if (!response.ok) throw new Error('Falha na resposta da rede');
-                    ticketData = await response.json();
-                } catch (error) {
-                    console.error("Erro ao buscar chamados:", error);
-                }
-            }
-
-            async function createTicket(newTicket) {
-                try {
-                    const response = await fetch('http://localhost:3000/chamados', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(newTicket)
-                    });
-                    if (!response.ok) throw new Error('Falha ao criar chamado');
-                    alert('Novo chamado aberto com sucesso!');
-                    await fetchTickets();
-                    loadPage('todos_chamados');
-                } catch (error) {
-                    console.error("Erro ao criar chamado:", error);
-                    alert("Não foi possível criar o chamado.");
-                }
-            }
-
-            async function updateTicket(ticketId, updatedData) {
-                try {
-                    const response = await fetch(`http://localhost:3000/chamados/${ticketId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(updatedData)
-                    });
-                    if (!response.ok) throw new Error('Falha ao atualizar chamado');
-                    return await response.json();
-                } catch (error) {
-                    console.error(`Erro ao atualizar chamado #${ticketId}:`, error);
-                    alert("Não foi possível salvar as alterações.");
-                }
-            }
+            pageTitle.textContent = `Detalhe do Chamado #${ticket.id}`;
+            mainContentArea.classList.remove('dashboard-view');
+            mainContentArea.classList.add('plain-view');
             
-            function getPageTemplates() {
-                const statuses = ['Todos', 'Aberto', 'Em Andamento', 'Resolvido'];
-                const dynamicTechnicians = ['Todos', ...new Set(ticketData.filter(t => t.assignee).map(t => t.assignee))];
-                
-                return {
-                    dashboard: `
-                        <div class="widgets-grid">
-                            <div class="widget"><h3>Chamados Abertos</h3><p class="value">${ticketData.filter(t => t.status === 'Aberto').length}</p></div>
-                            <div class="widget"><h3>Meus Chamados Ativos</h3><p class="value">${ticketData.filter(t => t.assignee === currentUser && t.status !== 'Resolvido').length}</p></div>
-                            <div class="widget"><h3>Chamados Finalizados</h3><p class="value">${ticketData.filter(t => t.status === 'Resolvido').length}</p></div>
+            pageContent.innerHTML = `
+                <div class="content-panel">
+                    <h2>${ticket.title}</h2>
+                    <form class="ticket-detail-form" id="ticket-detail-form">
+                        <fieldset class="full-width" style="border:1px solid var(--cor-borda); padding:15px; border-radius:8px;">
+                            <legend style="padding:0 10px; font-weight:bold;">Detalhes do Chamado</legend>
+                            <div class="ticket-form">
+                                <div class="form-group half-width"><label>Solicitante:</label><input type="text" value="${ticket.requester}" disabled></div>
+                                <div class="form-group half-width"><label>Email:</label><input type="text" value="${ticket.email || 'N/A'}" disabled></div>
+                                <div class="form-group"><label>Sala:</label><input type="text" value="${ticket.sala || 'N/A'}" disabled></div>
+                                <div class="form-group"><label>Prédio:</label><input type="text" value="${ticket.predio || 'N/A'}" disabled></div>
+                                <div class="form-group half-width"><label>Telefone:</label><input type="text" value="${ticket.telefone || 'N/A'}" disabled></div>
+                                <div class="form-group half-width"><label>Nº Patrimônio:</label><input type="text" value="${ticket.patrimonio || 'N/A'}" disabled></div>
+                                <div class="form-group full-width"><label>Descrição Original:</label><textarea disabled style="min-height:100px; resize:none;">${ticket.description}</textarea></div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="full-width" style="border:1px solid var(--cor-borda); padding:15px; border-radius:8px; margin-top:20px;">
+                            <legend style="padding:0 10px; font-weight:bold;">Atendimento do Técnico</legend>
+                            <div class="ticket-form">
+                                <div class="form-group"><label>Atribuído para:</label><select id="assignee-select">${technicians.map(t => `<option ${ticket.assignee === t ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+                                <div class="form-group"><label>Status:</label><select id="status-select"><option ${ticket.status === 'Aberto' ? 'selected' : ''}>Aberto</option><option ${ticket.status === 'Em Andamento' ? 'selected' : ''}>Em Andamento</option><option ${ticket.status === 'Resolvido' ? 'selected' : ''}>Resolvido</option></select></div>
+                                <div class="form-group"><label>Situação do andamento:</label><select id="situation-select"><option ${ticket.situation === 'Aguardando Atendimento' ? 'selected' : ''}>Aguardando Atendimento</option><option ${ticket.situation === 'Analisando o Problema' ? 'selected' : ''}>Analisando o Problema</option><option ${ticket.situation === 'Finalizado' ? 'selected' : ''}>Finalizado</option></select></div>
+                                <div class="form-group"><label>Andamento (%):</label><select id="progress-select"><option value="0" ${ticket.progress === 0 ? 'selected' : ''}>0%</option><option value="20" ${ticket.progress === 20 ? 'selected' : ''}>20%</option><option value="50" ${ticket.progress === 50 ? 'selected' : ''}>50%</option><option value="100" ${ticket.progress === 100 ? 'selected' : ''}>100%</option></select></div>
+                                <div class="form-group full-width"><label>Anotações da Solução:</label><textarea id="solution-notes" placeholder="Descreva a solução aplicada...">${ticket.solution_notes || ''}</textarea></div>
+                            </div>
+                        </fieldset>
+                        <div class="form-actions full-width">
+                            <button type="button" class="action-button secondary-button" id="back-to-list-btn">Voltar</button>
+                            <button type="submit" class="action-button">Salvar Alterações</button>
                         </div>
-                        <div class="content-panel">
-                            <h2>Chamados de Alta Prioridade Abertos</h2>
-                            <table class="data-table">
-                                <thead><tr><th>ID</th><th>Título</th><th>Solicitante</th><th>Técnico</th><th>Andamento (%)</th></tr></thead>
-                                <tbody id="dashboard-urgent-tickets"></tbody>
-                            </table>
-                        </div>`,
-                    todos_chamados: `
-                        <div class="content-panel">
-                            <h2>Todos os Chamados</h2>
-                            <div class="filter-bar">
-                                <div class="search-bar"><input type="text" id="search-input" placeholder="Pesquisar por ID ou título..."></div>
-                                <div class="filter-group"><label for="status-filter">Situação</label><select id="status-filter">${statuses.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
-                                <div class="filter-group"><label for="technician-filter">Técnico</label><select id="technician-filter">${dynamicTechnicians.map(t => `<option value="${t}">${t}</option>`).join('')}</select></div>
-                            </div>
-                            <table class="data-table">
-                                 <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Técnico</th><th>Andamento (%)</th></tr></thead>
-                                 <tbody id="all-tickets-table-body"></tbody>
-                            </table>
-                        </div>`,
-                    meus_chamados: `
-                        <div class="content-panel">
-                             <h2>Meus Chamados</h2>
-                            <table class="data-table">
-                                 <thead><tr><th>ID</th><th>Título</th><th>Status</th><th>Prioridade</th><th>Solicitante</th><th>Andamento (%)</th></tr></thead>
-                                 <tbody id="my-tickets-table-body"></tbody>
-                            </table>
-                        </div>`,
-                    abrir_chamado: `
-                         <div class="content-panel">
-                            <h2>Abrir Novo Chamado</h2>
-                            <form class="ticket-form" id="new-ticket-form">
-                                <div class="form-group half-width"><label>Grupos:</label><input type="text" value="NTI - Núcleo de tecnologia da informação" disabled style="background:#eee;"></div>
-                                <div class="form-group half-width"><label>Área:</label><input type="text" value="Suporte ao Usuário" disabled style="background:#eee;"></div>
-                                <div class="form-group half-width"><label for="ticket-requester">Nome:</label><input type="text" id="ticket-requester" placeholder="Seu nome completo" required></div>
-                                <div class="form-group half-width"><label for="ticket-email">E-mail:</label><input type="email" id="ticket-email" placeholder="Seu email de contato" required></div>
-                                <div class="form-group"><label for="sala">Sala:</label><input type="text" id="sala"></div>
-                                <div class="form-group"><label for="predio">Prédio:</label><input type="text" id="predio"></div>
-                                <div class="form-group half-width"><label for="telefone">Telefone:</label><input type="tel" id="telefone"></div>
-                                <div class="form-group full-width"><label for="ticket-title">Título:</label><input type="text" id="ticket-title" placeholder="Digite uma descrição detalhada do chamado" required></div>
-                                <div class="form-group full-width"><label for="ticket-description">Descrição:</label><textarea id="ticket-description" placeholder="Detalhe o seu problema ou solicitação..." required style="min-height: 150px; resize: vertical;"></textarea></div>
-                                <div class="form-group half-width"><label for="ticket-priority">Prioridade:</label><select id="ticket-priority"><option value="">-- Selecione --</option><option>Baixa</option><option>Média</option><option>Alta</option></select></div>
-                                <div class="form-group half-width"><label for="ticket-patrimonio">Número de patrimônio:</label><input type="text" id="ticket-patrimonio"></div>
-                                <div class="form-actions full-width">
-                                    <button type="button" class="action-button secondary-button" id="cancel-btn">Cancelar</button>
-                                    <button type="submit" class="action-button">Finalizar Chamado</button>
-                                </div>
-                            </form>
-                        </div>`,
+                    </form>
+                </div>
+            `;
+
+            document.getElementById('back-to-list-btn').addEventListener('click', () => loadPage(previousPage));
+            document.getElementById('ticket-detail-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const updatedData = {
+                    assignee: document.getElementById('assignee-select').value,
+                    status: document.getElementById('status-select').value,
+                    situation: document.getElementById('situation-select').value,
+                    progress: parseInt(document.getElementById('progress-select').value),
+                    solution_notes: document.getElementById('solution-notes').value,
                 };
-            }
-            
-            function renderUrgentTickets() {
-                const urgentTickets = ticketData.filter(t => t.status === 'Aberto' && t.priority === 'Alta');
-                renderTable(document.getElementById('dashboard-urgent-tickets'), urgentTickets);
-            }
 
-            function renderAllTickets() {
-                const searchTerm = document.getElementById('search-input').value.toLowerCase();
-                const selectedStatus = document.getElementById('status-filter').value;
-                const selectedTechnician = document.getElementById('technician-filter').value;
-                const filteredTickets = ticketData.filter(ticket => (ticket.title.toLowerCase().includes(searchTerm) || ticket.id.toString().includes(searchTerm)) && (selectedStatus === 'Todos' || ticket.status === selectedStatus) && (selectedTechnician === 'Todos' || ticket.assignee === selectedTechnician));
-                renderTable(document.getElementById('all-tickets-table-body'), filteredTickets, false);
-            }
+                const updatedTicket = await updateTicket(ticket.id, {...ticket, ...updatedData});
+                if (updatedTicket) {
+                    alert(`Alterações ao chamado #${ticket.id} salvas com sucesso!`);
+                    await fetchTickets();
+                    loadPage(previousPage);
+                }
+            });
+        }
 
-            function renderMyTickets() {
-                const myTickets = ticketData.filter(ticket => ticket.assignee === currentUser);
-                renderTable(document.getElementById('my-tickets-table-body'), myTickets, true);
-            }
-            
-            function renderTable(tbody, data, isMyTicketsTable = false) {
-                 if (!tbody) return;
-                 tbody.innerHTML = data.length > 0 ? data.map(ticket => `
-                    <tr data-ticket-id="${ticket.id}" class="clickable">
-                        <td>#${ticket.id}</td>
-                        <td>${ticket.title}</td>
-                        <td><span class="status-badge status-${ticket.status.toLowerCase().replace(/ /g, '-')}">${ticket.status}</span></td>
-                        <td>${ticket.priority}</td>
-                        <td>${isMyTicketsTable ? ticket.requester : (ticket.assignee || 'Não atribuído')}</td>
-                        <td>${ticket.progress}%</td>
-                    </tr>
-                `).join('') : `<tr><td colspan="6" style="text-align:center;">Nenhum chamado encontrado.</td></tr>`;
-
-                tbody.querySelectorAll('tr.clickable').forEach(row => {
-                    row.addEventListener('click', () => {
-                        const ticketId = row.dataset.ticketId;
-                        const previousPage = tbody.id.includes('dashboard') ? 'dashboard' : (isMyTicketsTable ? 'meus_chamados' : 'todos_chamados');
-                        if(ticketId) loadTicketDetail(parseInt(ticketId), previousPage);
-                    });
-                });
-            }
-
-            function loadTicketDetail(ticketId, previousPage) {
-                const ticket = ticketData.find(t => t.id === ticketId);
-                pageTitle.textContent = `Detalhe do Chamado #${ticket.id}`;
-                mainContentArea.classList.remove('dashboard-view');
-                
-                pageContent.innerHTML = `
-                    <div class="content-panel">
-                        <h2>${ticket.title}</h2>
-                        <form class="ticket-detail-form" id="ticket-detail-form">
-                            <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px;">
-                                <legend style="padding:0 10px; font-weight:bold;">Detalhes do Chamado</legend>
-                                <div class="ticket-form">
-                                    <div class="form-group half-width"><label>Solicitante:</label><input type="text" value="${ticket.requester}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Email:</label><input type="text" value="${ticket.email || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group"><label>Sala:</label><input type="text" value="${ticket.sala || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group"><label>Prédio:</label><input type="text" value="${ticket.predio || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Telefone:</label><input type="text" value="${ticket.telefone || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group half-width"><label>Nº Patrimônio:</label><input type="text" value="${ticket.patrimonio || 'N/A'}" disabled style="background:#eee;"></div>
-                                    <div class="form-group full-width"><label>Descrição Original:</label><textarea disabled style="background:#eee; min-height:100px; resize:none;">${ticket.description}</textarea></div>
-                                </div>
-                            </fieldset>
-                            <fieldset class="full-width" style="border:1px solid #eee; padding:15px; border-radius:8px; margin-top:20px;">
-                                <legend style="padding:0 10px; font-weight:bold;">Atendimento do Técnico</legend>
-                                <div class="ticket-form">
-                                    <div class="form-group"><label>Atribuído para:</label><select id="assignee-select">${technicians.map(t => `<option ${ticket.assignee === t ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
-                                    <div class="form-group"><label>Situação:</label><select id="status-select"><option ${ticket.status === 'Aberto' ? 'selected' : ''}>Aberto</option><option ${ticket.status === 'Em Andamento' ? 'selected' : ''}>Em Andamento</option><option ${ticket.status === 'Resolvido' ? 'selected' : ''}>Resolvido</option></select></div>
-                                    <div class="form-group"><label>Situação do andamento:</label><select id="situation-select"><option ${ticket.situation === 'Aguardando Atendimento' ? 'selected' : ''}>Aguardando Atendimento</option><option ${ticket.situation === 'Analisando o Problema' ? 'selected' : ''}>Analisando o Problema</option><option ${ticket.situation === 'Finalizado' ? 'selected' : ''}>Finalizado</option></select></div>
-                                    <div class="form-group"><label>Andamento (%):</label><select id="progress-select"><option value="0" ${ticket.progress === 0 ? 'selected' : ''}>0%</option><option value="20" ${ticket.progress === 20 ? 'selected' : ''}>20%</option><option value="50" ${ticket.progress === 50 ? 'selected' : ''}>50%</option><option value="100" ${ticket.progress === 100 ? 'selected' : ''}>100%</option></select></div>
-                                    <div class="form-group full-width"><label>Anotações da Solução:</label><textarea id="solution-notes" placeholder="Descreva a solução aplicada...">${ticket.solution_notes || ''}</textarea></div>
-                                </div>
-                            </fieldset>
-                            <div class="form-actions full-width">
-                                <button type="button" class="action-button secondary-button" id="back-to-list-btn">Voltar</button>
-                                <button type="submit" class="action-button">Salvar Alterações</button>
-                            </div>
-                        </form>
-                    </div>
-                `;
-
-                document.getElementById('back-to-list-btn').addEventListener('click', () => loadPage(previousPage));
-                document.getElementById('ticket-detail-form').addEventListener('submit', async (e) => {
+        function setupEventListeners(pageName) {
+            if (pageName === 'dashboard') {
+                renderUrgentTickets();
+            } else if (pageName === 'todos_chamados') {
+                document.getElementById('search-input').addEventListener('input', renderAllTickets);
+                document.getElementById('status-filter').addEventListener('change', renderAllTickets);
+                document.getElementById('technician-filter').addEventListener('change', renderAllTickets);
+                renderAllTickets();
+            } else if (pageName === 'meus_chamados') {
+                document.getElementById('my-search-input').addEventListener('input', renderMyTickets);
+                document.getElementById('my-status-filter').addEventListener('change', renderMyTickets);
+                renderMyTickets();
+            } else if (pageName === 'abrir_chamado') {
+                document.getElementById('new-ticket-form').addEventListener('submit', (e) => {
                     e.preventDefault();
-                    const updatedData = {
-                        assignee: document.getElementById('assignee-select').value,
-                        status: document.getElementById('status-select').value,
-                        situation: document.getElementById('situation-select').value,
-                        progress: parseInt(document.getElementById('progress-select').value),
-                        solution_notes: document.getElementById('solution-notes').value,
+                    const newTicket = {
+                        title: document.getElementById('ticket-title').value,
+                        requester: document.getElementById('ticket-requester').value,
+                        email: document.getElementById('ticket-email').value,
+                        sala: document.getElementById('sala').value,
+                        predio: document.getElementById('predio').value,
+                        telefone: document.getElementById('telefone').value,
+                        description: document.getElementById('ticket-description').value,
+                        priority: document.getElementById('ticket-priority').value,
+                        patrimonio: document.getElementById('ticket-patrimonio').value,
+                        status: "Aberto", assignee: "Não atribuído", progress: 0,
+                        situation: "Aguardando Atendimento", solution_notes: ""
                     };
-                    const updatedTicket = await updateTicket(ticket.id, updatedData);
-                    if (updatedTicket) {
-                        alert(`Alterações ao chamado #${ticket.id} salvas com sucesso!`);
-                        await fetchTickets();
-                        loadPage(previousPage);
-                    }
+                    createTicket(newTicket);
                 });
+                document.getElementById('cancel-btn').addEventListener('click', () => loadPage('todos_chamados'));
             }
+        }
+        
+        async function loadPage(pageName) {
+            const linkText = document.querySelector(`.nav-link[data-page="${pageName}"]`).textContent.trim();
+            pageTitle.textContent = linkText;
 
-            function setupEventListeners(pageName) {
-                if (pageName === 'dashboard') {
-                    renderUrgentTickets();
-                } else if (pageName === 'todos_chamados') {
-                    document.getElementById('search-input').addEventListener('input', renderAllTickets);
-                    document.getElementById('status-filter').addEventListener('change', renderAllTickets);
-                    document.getElementById('technician-filter').addEventListener('change', renderAllTickets);
-                    renderAllTickets();
-                } else if (pageName === 'meus_chamados') {
-                    renderMyTickets();
-                } else if (pageName === 'abrir_chamado') {
-                    document.getElementById('new-ticket-form').addEventListener('submit', (e) => {
-                        e.preventDefault();
-                        const newTicket = {
-                            title: document.getElementById('ticket-title').value,
-                            requester: document.getElementById('ticket-requester').value,
-                            email: document.getElementById('ticket-email').value,
-                            sala: document.getElementById('sala').value,
-                            predio: document.getElementById('predio').value,
-                            telefone: document.getElementById('telefone').value,
-                            description: document.getElementById('ticket-description').value,
-                            priority: document.getElementById('ticket-priority').value,
-                            patrimonio: document.getElementById('ticket-patrimonio').value,
-                        };
-                        createTicket(newTicket);
-                    });
-                    document.getElementById('cancel-btn').addEventListener('click', () => loadPage('todos_chamados'));
-                }
-            }
+            mainContentArea.classList.toggle('dashboard-view', pageName === 'dashboard');
+            mainContentArea.classList.toggle('plain-view', pageName !== 'dashboard');
             
-            async function loadPage(pageName) {
-                const linkText = document.querySelector(`.nav-link[data-page="${pageName}"]`).textContent.trim();
-                pageTitle.textContent = linkText;
-                pageContent.innerHTML = getPageTemplates()[pageName] || '<p>Página não encontrada.</p>';
+            navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
+            
+            pageContent.innerHTML = getPageTemplates()[pageName] || '<p>Página não encontrada.</p>';
+            setupEventListeners(pageName);
+        }
 
-                mainContentArea.classList.toggle('dashboard-view', pageName === 'dashboard');
-                navLinks.forEach(link => link.classList.toggle('active', link.dataset.page === pageName));
-                
-                setupEventListeners(pageName);
+        // --- 8. Função de Inicialização da Aplicação ---
+        async function initializeApp() {
+            function getInitials(name) {
+                if (!name) return '';
+                const names = name.split(' ');
+                return `${names[0][0] || ''}${names.length > 1 ? names[names.length - 1][0] : ''}`.toUpperCase();
             }
+            document.getElementById('welcome-message').textContent = `Bem-vindo, ${loggedInUser.fullname}!`;
+            document.getElementById('user-avatar').textContent = getInitials(loggedInUser.fullname);
+            
+            document.getElementById('logout-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                sessionStorage.removeItem('loggedInUser');
+                window.location.href = './index.html';
+            });
 
-            async function initializeApp() {
-                function getInitials(name) {
-                    if (!name) return '';
-                    const names = name.split(' ');
-                    return `${names[0][0] || ''}${names.length > 1 ? names[names.length - 1][0] : ''}`.toUpperCase();
-                }
-                document.getElementById('welcome-message').textContent = `Bem-vindo, ${loggedInUser.username}!`;
-                document.getElementById('user-avatar').textContent = getInitials(loggedInUser.fullname);
-                document.getElementById('logout-btn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    sessionStorage.removeItem('loggedInUser');
-                    window.location.href = './index.html';
+            await fetchTickets();
+            loadPage('dashboard');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const page = event.target.closest('a').dataset.page;
+                    await fetchTickets();
+                    loadPage(page);
                 });
+            });
+        }
 
-                await fetchTickets();
-                loadPage('dashboard');
+        initializeApp();
+    });
+</script>
 
-                navLinks.forEach(link => {
-                    link.addEventListener('click', async (event) => {
-                        event.preventDefault();
-                        const page = event.target.closest('a').dataset.page;
-                        await fetchTickets();
-                        loadPage(page);
-                    });
-                });
-            }
-
-            initializeApp();
-        });
-    </script>
+<script src="Tema/logica.js"></script> 
 </body>
 </html>
-

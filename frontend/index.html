@@ -2,10 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Login - Central de Suporte</title>
+    
     <link rel="stylesheet" href="css/style.css">
+    
     <link rel="icon" type="image/jpeg" href="css/Imagens/icone_sistema.jpg">
+    
     <link rel="icon" href="data:,">
 </head>
 <body>
@@ -36,45 +41,63 @@
     </div>
 
     <script>
-        // Limpa qualquer sessão antiga ao chegar na página de login
+        // Garante que qualquer sessão de usuário anterior seja removida ao carregar a página de login.
+        // Isso previne que um usuário antigo permaneça logado.
         sessionStorage.removeItem('loggedInUser');
 
+        // Seleciona o elemento do formulário pelo seu ID ('login-form') e o armazena na constante 'form'.
         const form = document.getElementById('login-form');
 
+        // Adiciona um "ouvinte de evento" ao formulário que será acionado no evento 'submit' (quando o botão "Entrar" é clicado).
+        // A função é 'async' para permitir o uso de 'await' em operações assíncronas (como a requisição de rede).
         form.addEventListener('submit', async (event) => {
+            // Impede o comportamento padrão do navegador de recarregar a página ao submeter o formulário.
             event.preventDefault(); 
 
+            // Pega o valor (o texto digitado) do campo de input com id 'email'.
             const email = document.getElementById('email').value;
+            // Pega o valor do campo de input com id 'password'.
             const password = document.getElementById('password').value;
 
+            // Cria um objeto JavaScript com os dados de login para enviar ao servidor.
             const loginData = { email, password };
 
+            // O bloco 'try...catch' é usado para tratar possíveis erros na comunicação com o servidor.
             try {
+                // Envia uma requisição de rede para o servidor no endereço 'http://localhost:3000/login'.
+                // 'await' pausa a execução da função até que a resposta do servidor seja recebida.
                 const response = await fetch('http://localhost:3000/login', {
-                    method: 'POST',
+                    method: 'POST', // Define o método HTTP como POST, usado para enviar dados.
                     headers: {
+                        // Informa ao servidor que o corpo da requisição está no formato JSON.
                         'Content-Type': 'application/json'
                     },
+                    // Converte o objeto JavaScript 'loginData' em uma string JSON para ser enviada no corpo da requisição.
                     body: JSON.stringify(loginData)
                 });
 
+                // Converte a resposta do servidor (que está em formato JSON) para um objeto JavaScript.
                 const result = await response.json();
 
+                // Verifica se a requisição foi bem-sucedida (status HTTP 200-299).
                 if (response.ok) {
-                    // Guarda os dados do utilizador na sessão para usar na home page
+                    // Se o login for bem-sucedido, armazena os dados do usuário no 'sessionStorage' do navegador.
+                    // sessionStorage mantém os dados apenas enquanto a aba do navegador estiver aberta.
                     sessionStorage.setItem('loggedInUser', JSON.stringify(result.user));
                     
-                    // Redireciona para a home
-                    window.location.href = './home.html'; 
+                    // Redireciona o navegador do usuário para a página 'home.html'.
+                    window.location.href = 'home.html'; 
                 } else {
+                    // Se a resposta do servidor indicar um erro (ex: senha errada), exibe um alerta com a mensagem de erro vinda do servidor.
                     alert('Erro no login: ' + result.message);
                 }
             } catch (error) {
+                // Se ocorrer um erro de rede (ex: servidor offline), exibe o erro no console do desenvolvedor.
                 console.error('Erro ao conectar com o servidor:', error);
+                // Exibe um alerta genérico para o usuário.
                 alert('Não foi possível conectar ao servidor.');
             }
         });
     </script>
 </body>
 </html>
-

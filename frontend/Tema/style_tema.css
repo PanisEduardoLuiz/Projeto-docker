@@ -1,0 +1,31 @@
+/*
+  ======================================================
+  ARQUIVO DE ESTILOS DO TEMA (tema/theme.css)
+  ======================================================
+  Este arquivo centraliza todas as cores da aplicação
+  usando variáveis CSS para facilitar a troca de tema.
+*/
+
+/* TEMA CLARO (PADRÃO) */
+:root {
+    --cor-fundo: #f0f2f5;             /* Fundo principal da página */
+    --cor-painel: #ffffff;            /* Fundo de painéis, widgets e modais */
+    --cor-texto-principal: #333333;    /* Cor do texto principal */
+    --cor-texto-secundario: #666666;   /* Cor de texto mais claro, legendas */
+    --cor-borda: #dddddd;              /* Cor de bordas e divisórias */
+    --cor-sombra: rgba(0, 0, 0, 0.1);   /* Sombra suave */
+    --cor-primaria: #007bff;            /* Cor principal de botões e links (azul) */
+    --cor-fundo-hover: #f1f1f1;        /* Fundo de itens de menu ao passar o mouse */
+}
+
+/* TEMA ESCURO (ATIVADO QUANDO O BODY TIVER A CLASSE .dark-mode) */
+body.dark-mode {
+    --cor-fundo: #121212;             /* Fundo principal escuro */
+    --cor-painel: #1e1e1e;            /* Fundo de painéis um pouco mais claro */
+    --cor-texto-principal: #e0e0e0;    /* Cor do texto principal (claro) */
+    --cor-texto-secundario: #a0a0a0;   /* Cor de texto secundário */
+    --cor-borda: #444444;              /* Cor de bordas escuras */
+    --cor-sombra: rgba(0, 0, 0, 0.3);   /* Sombra mais visível no escuro */
+    --cor-primaria: #0084ff;            /* Azul um pouco mais vibrante */
+    --cor-fundo-hover: #333333;        /* Fundo de hover mais escuro */
+}
